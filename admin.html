@@ -2,7 +2,7 @@
 <title>Panel de talleres</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap">
 <style>
-/* Panel conectado a Supabase: login, resumen de talleres activos, inscriptas y lista de espera */
+/* Panel conectado a Supabase: login, pestañas de talleres activos ordenadas por fecha, inscriptas y lista de espera */
 :root{
   --bg:#faf5f0; --card:#ffffff; --text:#2d2420; --muted:#6f625a;
   --accent:#b5566b; --accent2:#8a3a4d; --btn:#8a3a4d; --btn-hover:#b5566b;
@@ -91,6 +91,32 @@ input[type=text],select,textarea{width:100%;font:.95rem var(--body);padding:11px
 input[type=email],input[type=password]{width:100%;font:.95rem var(--body);padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
 button.tag{background:none;font-family:var(--body);cursor:pointer}
 .top{flex-wrap:wrap}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tab{padding:6px 10px;font-size:.8rem;line-height:1.25;max-width:min(220px,calc(50% - 3px));flex:0 1 auto}
+.tab small{font-size:.7rem;margin-bottom:1px}
+.tab .tn{display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.tab.past{opacity:.7}
+
+.lbl{font:800 .78rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+.tabs{margin-bottom:4px}
+.tab.next{border:2px solid var(--accent);background:var(--soft);box-shadow:0 2px 10px rgba(138,58,77,.18)}
+.tab .nx{display:inline-block;margin-left:6px;background:var(--accent2);color:#fff;border-radius:999px;padding:0 7px;font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.prox{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.pchip{background:transparent;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:5px 11px;font:600 .8rem var(--body);cursor:pointer}
+.pchip:hover{background:var(--soft);color:var(--text)}
+.pchip[aria-pressed="true"]{border:1px solid var(--accent);color:var(--accent2);background:var(--soft)}
+details.box>summary{cursor:pointer;font:800 1.02rem var(--display);list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.box>summary::-webkit-details-marker{display:none}
+details.box>summary::after{content:"Abrir";font:600 .8rem var(--body);color:var(--accent2);text-decoration:underline}
+details.box[open]>summary::after{content:"Cerrar"}
+details.box[open]>summary{margin-bottom:10px}
+.mini{display:flex;gap:14px;margin-top:8px}
+.mini .back{padding:6px 2px 0}
+.mini .back.danger{color:#a33}
+.ask.danger{background:var(--warn-bg);color:var(--warn-tx)}
+.btn.warn{background:#a33}
+.btn.warn:hover{background:#c24444}
+.bd{display:inline-block;margin-left:6px;background:var(--warn-bg);color:var(--warn-tx);border-radius:999px;padding:0 7px;font-size:.7rem;font-weight:700}
 </style>
 <div class="w">
   <div class="top"><div class="logo" role="img" aria-label="Ribel Rafaela"></div><h1>Panel de talleres</h1><button class="tag" id="btnAct" type="button" hidden>Actualizar</button><button class="tag" id="btnOut" type="button" hidden style="margin-left:0">Salir</button></div>
@@ -106,7 +132,8 @@ button.tag{background:none;font-family:var(--body);cursor:pointer}
   </div>
   <div id="app" hidden>
     <p class="sub">Inscripciones y pedidos de aviso de tus talleres.</p>
-    <div class="tabs" id="tabs"></div>
+    <div class="lbl" id="lblA" hidden>Talleres activos</div><div class="tabs" id="tabs"></div>
+    <div id="proxw"></div>
     <div class="stats" id="stats"></div>
     <div id="blocks"></div>
     <div id="list"></div>
@@ -121,7 +148,7 @@ var MSG_DEF="Hola {nombre}! Soy Maribel, de Ribel Rafaela. Ya tenemos fecha para
 var MSG=MSG_DEF;
 try{MSG=localStorage.getItem('talleres_msg')||MSG_DEF}catch(e){}
 var ST=["Pendiente","Pagó","Entregado"], EST=["pendiente","pago","entregado"], NX=["Marcar pagó","Marcar entregado"];
-var TAL=[], INS=[], AVI=[], cur=null, SES=null, tt=null;
+var TAL=[], INS=[], AVI=[], cur=null, SES=null, tt=null, EDIT=null, DEL=null;
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function toast(t){var e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(tt);tt=setTimeout(function(){e.hidden=true},2800)}
@@ -209,65 +236,103 @@ function showLogin(msg){
 function showApp(){
   $('login').hidden=true;$('app').hidden=false;$('btnAct').hidden=false;$('btnOut').hidden=false;
 }
-function tabsHtml(t){
-  var o=ordenados(),conMov=o.filter(activo),otros=o.filter(function(x){return !activo(x)});
-  var h=conMov.map(function(x){
-    var n=rowsOf(x).length,w=wlOf(x).length,sm=[];
-    if(n)sm.push(n+(n===1?' anotada':' anotadas'));
-    if(w)sm.push(w+' en espera');
-    if(!sm.length)sm.push('Sin inscriptas');
-    return '<button class="tab" type="button" data-a="tab" data-id="'+esc(x.id)+'" aria-pressed="'+(x.id===t.id)+'">'+esc(x.nombre)+'<small>'+sm.join(' · ')+'</small></button>';
-  }).join('');
-  if(otros.length)h+='<div style="grid-column:1/-1"><select id="otro" aria-label="Otros talleres"><option value="">Otros talleres (sin fecha ni inscriptas)…</option>'+
-    otros.map(function(x){return '<option value="'+esc(x.id)+'"'+(x.id===t.id?' selected':'')+'>'+esc(x.nombre)+'</option>'}).join('')+'</select></div>';
-  return h;
-}
-function activo(t){return act(t)>0||String(t.fecha||'').trim()!==''}
+var DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+function activo(t){return act(t)>0}
 function pendPago(t){return rowsOf(t).filter(function(r){return r.estado==='pendiente'}).length}
 function sinAvisar(t){return wlOf(t).filter(function(r){return r.estado!=='avisado'}).length}
 function paraAtender(t){return pendPago(t)+sinAvisar(t)}
+function hoy0(){var h=new Date();return new Date(h.getFullYear(),h.getMonth(),h.getDate())}
+function fechaDe(t){
+  var m=String(t.fecha||'').match(/(\d{1,2})\s*\/\s*(\d{1,2})/);
+  if(!m)return null;
+  var d=+m[1],mo=+m[2];
+  if(mo<1||mo>12||d<1||d>31)return null;
+  var h=hoy0(),f=new Date(h.getFullYear(),mo-1,d);
+  if(f.getTime()<h.getTime()-60*864e5)f=new Date(h.getFullYear()+1,mo-1,d);
+  return f;
+}
 function porNombre(a,b){return a.nombre<b.nombre?-1:1}
-function renderResumen(){
-  $('tabs').innerHTML='';$('blocks').innerHTML='';
-  if(!TAL.length){
+/* Orden: próximos por fecha, después los sin fecha, después los que ya pasaron */
+function activosOrd(){
+  var h=hoy0().getTime();
+  function g(t){var f=fechaDe(t);return f===null?1:(f.getTime()>=h?0:2)}
+  return TAL.filter(activo).sort(function(a,b){
+    var ga=g(a),gb=g(b);if(ga!==gb)return ga-gb;
+    var fa=fechaDe(a),fb=fechaDe(b);
+    if(ga===0)return fa-fb||porNombre(a,b);
+    if(ga===2)return fb-fa||porNombre(a,b);
+    return porNombre(a,b);
+  });
+}
+function proximoId(){
+  var h0=hoy0().getTime(),r=null;
+  activosOrd().forEach(function(x){var f=fechaDe(x);if(!r&&f&&f.getTime()>=h0)r=x.id});
+  return r;
+}
+function labFecha(x){
+  var f=fechaDe(x),h0=hoy0().getTime();
+  return f?DIAS[f.getDay()]+' '+f.getDate()+'/'+(f.getMonth()+1)+(f.getTime()<h0?' · pasó':''):'Sin fecha';
+}
+function tabsHtml(t){
+  var h0=hoy0().getTime(),nx=proximoId();
+  return activosOrd().map(function(x){
+    var f=fechaDe(x),p=paraAtender(x),pasado=f&&f.getTime()<h0,es=x.id===nx;
+    return '<button class="tab'+(pasado?' past':'')+(es?' next':'')+'" type="button" data-a="tab" data-id="'+esc(x.id)+'" aria-pressed="'+(!!t&&x.id===t.id)+'">'+
+      '<small>'+labFecha(x)+(es?'<span class="nx">Próximo</span>':'')+(p?'<span class="bd">'+p+'</span>':'')+'</small><span class="tn">'+esc(x.nombre)+'</span></button>';
+  }).join('');
+}
+function proxHtml(t){
+  var otros=TAL.filter(function(x){return !activo(x)}).sort(function(a,b){
+    var fa=fechaDe(a),fb=fechaDe(b);
+    if(fa&&fb)return fa-fb||porNombre(a,b);
+    if(fa)return -1;if(fb)return 1;return porNombre(a,b);
+  });
+  if(!otros.length)return '';
+  return '<div class="lbl">Próximos talleres</div><div class="prox">'+otros.map(function(x){
+    var f=fechaDe(x);
+    return '<button class="pchip" type="button" data-a="tab" data-id="'+esc(x.id)+'" aria-pressed="'+(!!t&&x.id===t.id)+'">'+esc(x.nombre)+(f?' · '+f.getDate()+'/'+(f.getMonth()+1):'')+'</button>';
+  }).join('')+'</div>';
+}
+function editForm(kind,r){
+  var h='<div class="ask"><label class="fld"><span>Nombre</span><input id="en" type="text" value="'+esc(r.nombre)+'"></label>'+
+    '<label class="fld"><span>Mail</span><input id="ee" type="text" value="'+esc(r.email)+'"></label>'+
+    '<label class="fld"><span>WhatsApp</span><input id="ew" type="text" value="'+esc(r.whatsapp)+'"></label>';
+  if(kind==='i')h+='<label class="fld"><span>Modalidad</span><select id="em"><option value="vivo"'+(r.modalidad==='vivo'?' selected':'')+'>En vivo</option><option value="grabacion"'+(r.modalidad!=='vivo'?' selected':'')+'>Solo grabación</option></select></label>';
+  h+='<div class="acts"><button class="btn" type="button" data-a="saveedit" data-k="'+kind+'" data-id="'+esc(r.id)+'">Guardar cambios</button><button class="btn ghost" type="button" data-a="cancel">Cancelar</button></div></div>';
+  return h;
+}
+function tools(kind,r){
+  if(EDIT!==null&&String(EDIT)===String(r.id))return editForm(kind,r);
+  if(DEL!==null&&String(DEL)===String(r.id))return '<div class="ask danger">¿Eliminar a <b>'+esc(r.nombre)+'</b>? No se puede deshacer.<div class="acts"><button class="btn warn" type="button" data-a="delok" data-k="'+kind+'" data-id="'+esc(r.id)+'">Sí, eliminar</button><button class="btn ghost" type="button" data-a="cancel">No, dejar</button></div></div>';
+  return '<div class="mini"><button class="back" type="button" data-a="edit" data-id="'+esc(r.id)+'">Corregir datos</button><button class="back danger" type="button" data-a="del" data-id="'+esc(r.id)+'">Eliminar</button></div>';
+}
+function render(){
+  var t=curT();
+  if(!t){var ac=activosOrd();t=ac[0]||TAL.slice().sort(porNombre)[0];if(t)cur=t.id}
+  $('lblA').hidden=!activosOrd().length;
+  $('tabs').innerHTML=tabsHtml(t);
+  $('proxw').innerHTML=proxHtml(t);
+  if(!t){
     $('stats').innerHTML='';$('list').innerHTML='';
     $('blocks').innerHTML='<div class="box"><h2>No hay talleres cargados</h2><p class="d" style="margin:0">Revisá la tabla talleres en Supabase.</p></div>';
     return;
   }
-  var pend=INS.filter(function(r){return r.estado==='pendiente'}).length,esp=AVI.filter(function(r){return r.estado!=='avisado'}).length;
-  $('stats').innerHTML=statBox(INS.length,'Anotadas')+statBox(pend,'Pagos pendientes')+statBox(esp,'Sin avisar');
-  var act_=TAL.filter(activo).sort(function(a,b){var d=paraAtender(b)-paraAtender(a);if(d)return d;return porNombre(a,b)});
-  var otros=TAL.filter(function(x){return !activo(x)}).sort(porNombre);
-  var l='<div class="sect">Talleres activos</div>';
-  l+=act_.length?act_.map(function(t){
-    var n=rowsOf(t).length,w=wlOf(t).length,p=paraAtender(t),f=String(t.fecha||'').trim();
-    return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(t.nombre)+'</b><small>'+(f?esc(f):'Sin fecha todavía')+'</small></div>'+(p?'<span class="pill p0">'+p+' para atender</span>':'')+'</div>'+
-      '<div class="chips"><span class="chip">'+n+(n===1?' anotada':' anotadas')+'</span>'+(w?'<span class="chip">'+w+' en espera</span>':'')+'</div>'+
-      '<div class="ac one"><button class="btn" type="button" data-a="tab" data-id="'+esc(t.id)+'">Abrir</button></div></div>';
-  }).join(''):'<div class="box"><h2>Todavía no hay talleres activos</h2><p class="d" style="margin:0">Aparecen cuando alguien se anota o pide aviso, o cuando le cargás una fecha a un taller.</p></div>';
-  if(otros.length)l+='<div class="sect">Otros talleres</div><select id="otro" aria-label="Otros talleres"><option value="">Elegir un taller sin fecha ni inscriptas…</option>'+
-    otros.map(function(x){return '<option value="'+esc(x.id)+'">'+esc(x.nombre)+'</option>'}).join('')+'</select>';
-  $('list').innerHTML=l;
-}
-function render(){
-  var t=curT();
-  if(!t){renderResumen();return}
   var rows=rowsOf(t),wl=wlOf(t);
-  $('tabs').innerHTML='<div style="grid-column:1/-1"><button class="back" type="button" data-a="home" style="padding-top:0">← Todos los talleres</button></div>'+tabsHtml(t);
   var c=[0,0,0];rows.forEach(function(r){var s=EST.indexOf(r.estado);c[s<0?0:s]++});
   $('stats').innerHTML=statBox(rows.length,'Anotadas')+statBox(c[1]+c[2],'Pagaron')+statBox(c[2],'Entregadas');
-  var b='<div class="box"><h2>Datos del taller</h2><p class="d">La fecha y el link de Zoom quedan guardados para este taller.</p>'+
+  var sinF=!String(t.fecha||'').trim();
+  var b='<details class="box"'+(sinF?' open':'')+'><summary>Datos del taller</summary><p class="d">La fecha y el link de Zoom quedan guardados para este taller.</p>'+
     '<label class="fld" for="fe"><span>Fecha del taller</span><input id="fe" type="text" value="'+esc(t.fecha)+'" placeholder="Ej: sábado 5/12 a las 14 hs"></label>'+
     '<label class="fld" for="zoom"><span>Link de Zoom</span><input id="zoom" type="text" value="'+esc(t.zoom_link)+'" placeholder="Pegá el link de Zoom"></label>'+
-    '<button class="btn full" type="button" data-a="savet">Guardar datos</button></div>';
+    '<button class="btn full" type="button" data-a="savet">Guardar datos</button></details>';
   if(wl.length){
-    b+='<div class="box"><h2>Avisar la fecha</h2><p class="d">Las personas que pidieron aviso reciben un mensaje armado con su nombre. La fecha sale de "Datos del taller".</p>'+
+    b+='<details class="box"><summary>Mensaje para la lista de espera</summary><p class="d">Las personas que pidieron aviso reciben un mensaje armado con su nombre. La fecha sale de "Datos del taller".</p>'+
       '<label class="fld" for="mj"><span>Mensaje</span><textarea id="mj" rows="5">'+esc(MSG)+'</textarea></label>'+
       '<p class="note">Se completa solo: {nombre}, {taller} y {fecha}.</p>'+
       '<p class="note" style="margin-bottom:4px"><b>Así le llega a '+esc(String(wl[0].nombre).split(' ')[0])+':</b></p><div class="ask" id="prev" style="margin-top:0">'+esc(fill(MSG,wl[0],t))+'</div>'+
-      '<p class="err" id="errf" style="margin-top:8px"></p></div>';
+      '<p class="err" id="errf" style="margin-top:8px"></p></details>';
   }
-  b+='<div class="box"><h2>Envío por mail</h2><p class="d" style="margin:0">El envío del link de Zoom, del material en PDF y de los certificados lo conectamos en el próximo paso. Por ahora podés escribirles por WhatsApp desde cada tarjeta.</p></div>';
+  b+='<details class="box"><summary>Envío por mail</summary><p class="d" style="margin:0">El envío del link de Zoom, del material en PDF y de los certificados lo conectamos en el próximo paso. Por ahora podés escribirles por WhatsApp desde cada tarjeta.</p></details>';
   $('blocks').innerHTML=b;
   var l='';
   if(wl.length){
@@ -275,7 +340,7 @@ function render(){
       var av=r.estado==='avisado';
       return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(r.nombre)+'</b><small>'+esc(r.whatsapp)+(r.email?' · '+esc(r.email):'')+'</small></div><span class="pill p'+(av?2:0)+'">'+(av?'Avisada':'En espera')+'</span></div>'+
         '<div class="ac one"><button class="btn" type="button" data-a="wav" data-id="'+esc(r.id)+'">'+(av?'Avisar de nuevo por WhatsApp':'Avisar por WhatsApp')+'</button></div>'+
-        (av?'<button class="back" type="button" data-a="wback" data-id="'+esc(r.id)+'">Me equivoqué, volver a En espera</button>':'')+'</div>';
+        (av?'<button class="back" type="button" data-a="wback" data-id="'+esc(r.id)+'">Me equivoqué, volver a En espera</button>':'')+tools('a',r)+'</div>';
     }).join('');
   }
   l+='<div class="sect">Inscriptas</div>';
@@ -285,12 +350,12 @@ function render(){
     var back=s>0?'<button class="back" type="button" data-a="back" data-id="'+esc(r.id)+'">'+(s===1?'Me equivoqué, volver a Pendiente':'Volver a Pagó')+'</button>':'';
     return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(r.nombre)+'</b><small>'+esc(r.email)+' · '+esc(r.whatsapp)+'</small></div><span class="pill p'+s+'">'+ST[s]+'</span></div>'+
       '<div class="chips"><span class="chip">'+(r.modalidad==='vivo'?'En vivo':'Solo grabación')+'</span>'+(money(r)?'<span class="chip">'+esc(money(r))+'</span>':'')+(r.zoom_enviado?'<span class="chip">Zoom enviado</span>':'')+'</div>'+
-      '<div class="ac'+(s===2?' one':'')+'"><button class="btn ghost" type="button" data-a="wa" data-id="'+esc(r.id)+'">Escribir por WhatsApp</button>'+fwd+'</div>'+back+'</div>';
+      '<div class="ac'+(s===2?' one':'')+'"><button class="btn ghost" type="button" data-a="wa" data-id="'+esc(r.id)+'">Escribir por WhatsApp</button>'+fwd+'</div>'+back+tools('i',r)+'</div>';
   }).join(''):'<div class="box"><h2>Todavía no hay inscriptas</h2><p class="d" style="margin:0">Cuando alguien se anote en este taller, aparece acá.</p></div>';
   $('list').innerHTML=l;
 }
 function start(){
-  cur=null;
+  cur=null;EDIT=null;DEL=null;
   showApp();
   $('tabs').innerHTML='';$('stats').innerHTML='';$('list').innerHTML='';
   $('blocks').innerHTML='<div class="box"><p class="d" style="margin:0">Cargando…</p></div>';
@@ -323,8 +388,7 @@ document.addEventListener('change',function(e){
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b||!b.dataset.a)return;
   var a=b.dataset.a,id=b.dataset.id,t=curT();
-  if(a==='home'){cur=null;render();window.scrollTo(0,0);return}
-  if(a==='tab'){cur=id;render();window.scrollTo(0,0);return}
+  if(a==='tab'){cur=id;EDIT=null;DEL=null;render();window.scrollTo(0,0);return}
   if(a==='act'){start();return}
   if(a==='savet'){
     t.fecha=($('fe').value||'').trim();t.zoom_link=($('zoom').value||'').trim();
@@ -350,6 +414,27 @@ document.addEventListener('click',function(e){
     window.open('https://wa.me/'+waNum(w.whatsapp)+'?text='+encodeURIComponent(fill(MSG,w,t)),'_blank');
     Promise.all([patch('avisos',w.id,{estado:'avisado'}),patch('talleres',t.id,{fecha:fecha})])
       .then(function(){w.estado='avisado';render();toast('Marcada como avisada: '+w.nombre)}).catch(fallo);
+    return;
+  }
+  if(a==='edit'){EDIT=id;DEL=null;render();return}
+  if(a==='del'){DEL=id;EDIT=null;render();return}
+  if(a==='cancel'){EDIT=null;DEL=null;render();return}
+  if(a==='saveedit'){
+    var k=b.dataset.k,lst=k==='i'?INS:AVI,tb=k==='i'?'inscripciones':'avisos';
+    var o=lst.filter(function(x){return String(x.id)===String(id)})[0];if(!o)return;
+    var d={nombre:($('en').value||'').trim(),email:($('ee').value||'').trim()||null,whatsapp:($('ew').value||'').trim()};
+    if(k==='i')d.modalidad=$('em').value;
+    if(!d.nombre){toast('El nombre no puede quedar vacío');return}
+    patch(tb,id,d).then(function(){for(var f in d)o[f]=d[f];EDIT=null;render();toast('Datos corregidos')}).catch(fallo);
+    return;
+  }
+  if(a==='delok'){
+    var k2=b.dataset.k,tb2=k2==='i'?'inscripciones':'avisos';
+    api(tb2+'?id=eq.'+encodeURIComponent(id),{method:'DELETE',rep:true}).then(function(r){
+      if(!r||!r.length)throw new Error('NODEL');
+      if(k2==='i')INS=INS.filter(function(x){return String(x.id)!==String(id)});else AVI=AVI.filter(function(x){return String(x.id)!==String(id)});
+      DEL=null;render();toast('Eliminada');
+    }).catch(function(e){if(e&&e.message==='NODEL'){DEL=null;render();toast('No se pudo eliminar: falta el permiso en Supabase')}else fallo(e)});
     return;
   }
   if(a==='wback'){
