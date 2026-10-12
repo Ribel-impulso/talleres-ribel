@@ -223,7 +223,7 @@ var PRECIO_USD = 12;     // taller en vivo, dólares
 var REC = 15000;         // solo grabación, pesos argentinos
 var REC_USD = 12;         // solo grabación, dólares
 var DESC = 0.10;         // 10% de descuento
-var DESC_MIN = 3;        // cantidad de talleres (en vivo o grabación) para que se aplique
+var DESC_MIN = 2;        // cantidad de talleres (en vivo o grabación) para que se aplique
 var cur = 'ARS';         // moneda que se está viendo
 
 function hoyAR(){
@@ -330,8 +330,8 @@ T.forEach(function(t,i){
   else tags = '<span class="tag s">Próximamente</span>';
   var kPrice = live ? 'live' : (rec ? 'rec' : 'live');
   var opts = '<div class="opts">';
-  if(live) opts += '<label class="opt" id="o'+i+'live"><input type="checkbox" id="k'+i+'live"><span><b>En vivo + grabación</b><small class="pr" data-k="live"></small></span></label>';
-  if(rec) opts += '<label class="opt" id="o'+i+'rec"><input type="checkbox" id="k'+i+'rec"><span><b>Solo grabación</b><small class="pr" data-k="rec"></small></span></label>';
+  if(live) opts += '<label class="opt" id="o'+i+'live"><input type="checkbox" id="k'+i+'live"><span><b>En vivo + grabación</b></span></label>';
+if(rec) opts += '<label class="opt" id="o'+i+'rec"><input type="checkbox" id="k'+i+'rec"><span><b>Solo grabación</b></span></label>';
   if(!live && !rec) opts += '<button class="btn ghost" type="button" data-aviso="'+i+'">Avisame cuando tenga fecha</button>';
   opts += '</div>';
   c.innerHTML =
