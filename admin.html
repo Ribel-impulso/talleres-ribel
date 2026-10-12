@@ -2,7 +2,7 @@
 <title>Panel de talleres</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap">
 <style>
-/* Panel conectado a Supabase: login, talleres, inscriptas y lista de espera */
+/* Panel conectado a Supabase: login, resumen de talleres activos, inscriptas y lista de espera */
 :root{
   --bg:#faf5f0; --card:#ffffff; --text:#2d2420; --muted:#6f625a;
   --accent:#b5566b; --accent2:#8a3a4d; --btn:#8a3a4d; --btn-hover:#b5566b;
@@ -210,27 +210,50 @@ function showApp(){
   $('login').hidden=true;$('app').hidden=false;$('btnAct').hidden=false;$('btnOut').hidden=false;
 }
 function tabsHtml(t){
-  var o=ordenados(),conMov=o.filter(function(x){return act(x)>0}),otros=o.filter(function(x){return act(x)===0});
+  var o=ordenados(),conMov=o.filter(activo),otros=o.filter(function(x){return !activo(x)});
   var h=conMov.map(function(x){
     var n=rowsOf(x).length,w=wlOf(x).length,sm=[];
     if(n)sm.push(n+(n===1?' anotada':' anotadas'));
     if(w)sm.push(w+' en espera');
+    if(!sm.length)sm.push('Sin inscriptas');
     return '<button class="tab" type="button" data-a="tab" data-id="'+esc(x.id)+'" aria-pressed="'+(x.id===t.id)+'">'+esc(x.nombre)+'<small>'+sm.join(' · ')+'</small></button>';
   }).join('');
-  if(otros.length)h+='<div style="grid-column:1/-1"><select id="otro" aria-label="Otros talleres"><option value="">Otros talleres, sin inscriptas todavía…</option>'+
+  if(otros.length)h+='<div style="grid-column:1/-1"><select id="otro" aria-label="Otros talleres"><option value="">Otros talleres (sin fecha ni inscriptas)…</option>'+
     otros.map(function(x){return '<option value="'+esc(x.id)+'"'+(x.id===t.id?' selected':'')+'>'+esc(x.nombre)+'</option>'}).join('')+'</select></div>';
   return h;
 }
-function render(){
-  var t=curT();
-  if(!t&&TAL.length){t=ordenados()[0];cur=t.id}
-  if(!t){
-    $('tabs').innerHTML='';$('stats').innerHTML='';$('list').innerHTML='';
+function activo(t){return act(t)>0||String(t.fecha||'').trim()!==''}
+function pendPago(t){return rowsOf(t).filter(function(r){return r.estado==='pendiente'}).length}
+function sinAvisar(t){return wlOf(t).filter(function(r){return r.estado!=='avisado'}).length}
+function paraAtender(t){return pendPago(t)+sinAvisar(t)}
+function porNombre(a,b){return a.nombre<b.nombre?-1:1}
+function renderResumen(){
+  $('tabs').innerHTML='';$('blocks').innerHTML='';
+  if(!TAL.length){
+    $('stats').innerHTML='';$('list').innerHTML='';
     $('blocks').innerHTML='<div class="box"><h2>No hay talleres cargados</h2><p class="d" style="margin:0">Revisá la tabla talleres en Supabase.</p></div>';
     return;
   }
+  var pend=INS.filter(function(r){return r.estado==='pendiente'}).length,esp=AVI.filter(function(r){return r.estado!=='avisado'}).length;
+  $('stats').innerHTML=statBox(INS.length,'Anotadas')+statBox(pend,'Pagos pendientes')+statBox(esp,'Sin avisar');
+  var act_=TAL.filter(activo).sort(function(a,b){var d=paraAtender(b)-paraAtender(a);if(d)return d;return porNombre(a,b)});
+  var otros=TAL.filter(function(x){return !activo(x)}).sort(porNombre);
+  var l='<div class="sect">Talleres activos</div>';
+  l+=act_.length?act_.map(function(t){
+    var n=rowsOf(t).length,w=wlOf(t).length,p=paraAtender(t),f=String(t.fecha||'').trim();
+    return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(t.nombre)+'</b><small>'+(f?esc(f):'Sin fecha todavía')+'</small></div>'+(p?'<span class="pill p0">'+p+' para atender</span>':'')+'</div>'+
+      '<div class="chips"><span class="chip">'+n+(n===1?' anotada':' anotadas')+'</span>'+(w?'<span class="chip">'+w+' en espera</span>':'')+'</div>'+
+      '<div class="ac one"><button class="btn" type="button" data-a="tab" data-id="'+esc(t.id)+'">Abrir</button></div></div>';
+  }).join(''):'<div class="box"><h2>Todavía no hay talleres activos</h2><p class="d" style="margin:0">Aparecen cuando alguien se anota o pide aviso, o cuando le cargás una fecha a un taller.</p></div>';
+  if(otros.length)l+='<div class="sect">Otros talleres</div><select id="otro" aria-label="Otros talleres"><option value="">Elegir un taller sin fecha ni inscriptas…</option>'+
+    otros.map(function(x){return '<option value="'+esc(x.id)+'">'+esc(x.nombre)+'</option>'}).join('')+'</select>';
+  $('list').innerHTML=l;
+}
+function render(){
+  var t=curT();
+  if(!t){renderResumen();return}
   var rows=rowsOf(t),wl=wlOf(t);
-  $('tabs').innerHTML=tabsHtml(t);
+  $('tabs').innerHTML='<div style="grid-column:1/-1"><button class="back" type="button" data-a="home" style="padding-top:0">← Todos los talleres</button></div>'+tabsHtml(t);
   var c=[0,0,0];rows.forEach(function(r){var s=EST.indexOf(r.estado);c[s<0?0:s]++});
   $('stats').innerHTML=statBox(rows.length,'Anotadas')+statBox(c[1]+c[2],'Pagaron')+statBox(c[2],'Entregadas');
   var b='<div class="box"><h2>Datos del taller</h2><p class="d">La fecha y el link de Zoom quedan guardados para este taller.</p>'+
@@ -267,6 +290,7 @@ function render(){
   $('list').innerHTML=l;
 }
 function start(){
+  cur=null;
   showApp();
   $('tabs').innerHTML='';$('stats').innerHTML='';$('list').innerHTML='';
   $('blocks').innerHTML='<div class="box"><p class="d" style="margin:0">Cargando…</p></div>';
@@ -299,7 +323,8 @@ document.addEventListener('change',function(e){
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b||!b.dataset.a)return;
   var a=b.dataset.a,id=b.dataset.id,t=curT();
-  if(a==='tab'){cur=id;render();return}
+  if(a==='home'){cur=null;render();window.scrollTo(0,0);return}
+  if(a==='tab'){cur=id;render();window.scrollTo(0,0);return}
   if(a==='act'){start();return}
   if(a==='savet'){
     t.fecha=($('fe').value||'').trim();t.zoom_link=($('zoom').value||'').trim();
