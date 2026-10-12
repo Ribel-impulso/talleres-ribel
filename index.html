@@ -214,6 +214,18 @@ function hoyAR(){
 }
 var HOY = hoyAR();
 
+// Base de datos (Supabase). La clave "publishable" es pública: solo permite ENVIAR inscripciones y avisos, no leer nada.
+var SUPABASE_URL = "https://ldvukasrgskzrmskrqde.supabase.co";
+var SUPABASE_KEY = "sb_publishable_ixATKY00uzUmtXd5JCerfw_qmSw5bsn";
+function guardar(tabla, filas){
+  return fetch(SUPABASE_URL + '/rest/v1/' + tabla, {
+    method: 'POST',
+    headers: {'apikey': SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal'},
+    body: JSON.stringify(filas),
+    keepalive: true
+  }).then(function(res){ if(!res.ok) throw new Error('HTTP ' + res.status); });
+}
+
 // f: fecha del taller (año-mes-día) · on: se vende en vivo · rec: se puede comprar la grabación
 // Los que no tienen on ni rec salen como Próximamente, con el botón "Avisame cuando tenga fecha".
 var T = [
@@ -366,6 +378,24 @@ document.getElementById('close').addEventListener('click', closeSheet);
 ov.addEventListener('click', function(e){ if(e.target === ov) closeSheet(); });
 ['nombre','whats','mail'].forEach(function(id){ document.getElementById(id).addEventListener('input', link); });
 
+var ultimaInscripcion = '';
+function guardarInscripcion(nombre, whats, mail){
+  var list = chosen(), r = totals(list);
+  var filas = list.map(function(x){
+    var p = price(x.k);
+    return {
+      taller: T[x.i].n, nombre: nombre, email: mail, whatsapp: whats,
+      modalidad: x.k === 'rec' ? 'grabacion' : 'vivo',
+      precio: r.dto ? Math.round(p * (1 - DESC) * 100) / 100 : p,
+      moneda: cur
+    };
+  });
+  var clave = JSON.stringify(filas);
+  if(clave === ultimaInscripcion) return;   // evita duplicados si toca dos veces
+  ultimaInscripcion = clave;
+  guardar('inscripciones', filas).catch(function(){ ultimaInscripcion = ''; });
+}
+
 document.getElementById('send').addEventListener('click', function(e){
   var nombre = document.getElementById('nombre').value.trim();
   var whats = document.getElementById('whats').value.replace(/\D/g,'');
@@ -377,10 +407,13 @@ document.getElementById('send').addEventListener('click', function(e){
   document.getElementById('err').textContent = msg;
   if(msg){ e.preventDefault(); return; }
   link();
+  guardarInscripcion(nombre, document.getElementById('whats').value.trim(), mail);
 });
 
 var ov2 = document.getElementById('ov2');
+var avIdx = null;
 function openAviso(i){
+  avIdx = i;
   document.getElementById('avT').textContent = 'Taller: ' + T[i].n;
   document.getElementById('avForm').hidden = false;
   document.getElementById('avOk').hidden = true;
@@ -402,8 +435,17 @@ document.getElementById('avSend').addEventListener('click', function(){
   else if(mail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) msg = 'Revisá tu mail.';
   document.getElementById('avErr').textContent = msg;
   if(msg) return;
-  document.getElementById('avForm').hidden = true;
-  document.getElementById('avOk').hidden = false;
+  var btn = document.getElementById('avSend');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  guardar('avisos', [{taller: T[avIdx].n, nombre: nombre, whatsapp: document.getElementById('avW').value.trim(), email: mail || null}])
+    .then(function(){
+      document.getElementById('avForm').hidden = true;
+      document.getElementById('avOk').hidden = false;
+    })
+    .catch(function(){
+      document.getElementById('avErr').textContent = 'No pudimos guardar tu pedido. Probá de nuevo en un rato o escribinos por WhatsApp.';
+    })
+    .then(function(){ btn.disabled = false; btn.textContent = 'Anotarme'; });
 });
 document.addEventListener('keydown', function(e){
   if(e.key !== 'Escape') return;
