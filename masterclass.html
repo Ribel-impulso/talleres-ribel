@@ -64,6 +64,9 @@ h2.t{font-size:1.1rem;font-weight:800;margin-bottom:14px}
 .ok p{margin:0;color:var(--muted);font-size:1.05rem}
 .pill{background:var(--soft);border-radius:14px;padding:12px 18px;font-weight:600;font-size:.98rem}
 .ok small{color:var(--muted);font-size:.85rem}
+.estado{text-align:center;color:var(--muted);font-size:1.05rem;padding-block:80px}
+.pasada{text-align:center;padding-block:10px}
+.pasada p{margin:10px 0 0;color:var(--muted)}
 [hidden]{display:none!important}
 footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:20px 40px;border-top:1px solid var(--line)}
 </style>
@@ -76,15 +79,21 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:20px 
     <div class="loc">Rafaela, Argentina</div>
   </div>
 
-  <main class="layout">
+  <div class="estado" id="estado" role="status">Cargando…</div>
+
+  <main class="layout" id="contenido" hidden>
 
     <section class="intro">
       <div class="eyebrow">Masterclass gratuita en vivo</div>
-      <h1>Perfeccionarte también llena tu agenda.</h1>
-      <p class="sub">Una clase en vivo para masajistas: cómo conseguir clientas nuevas y lograr que vuelvan.</p>
+      <h1 id="titulo"></h1>
+      <p class="sub" id="bajada"></p>
     </section>
 
     <section class="formcard" id="reserva" aria-live="polite">
+      <div class="pasada" id="vistaPasada" hidden>
+        <h2>Esta masterclass ya se realizó</h2>
+        <p>Muy pronto anunciamos la próxima.</p>
+      </div>
       <div id="vistaForm">
         <h2>Reservá tu lugar gratis</h2>
         <p class="when"><span data-fecha></span> · <span data-hora></span> (Argentina)</p>
@@ -123,14 +132,10 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:20px 
 
     <section class="detalle">
       <h2 class="t">En 60 minutos vas a ver</h2>
-      <ol class="pts">
-        <li><span class="n">1</span><span class="tx">Por qué perfeccionarte hace que te elijan y que vuelvan.</span></li>
-        <li><span class="n">2</span><span class="tx">Cómo conseguir clientas nuevas sin gastar de más.</span></li>
-        <li><span class="n">3</span><span class="tx">Cómo hacer que tus clientas repitan y vuelvan a reservar.</span></li>
-      </ol>
+      <ol class="pts" id="puntos"></ol>
       <div class="facts">
-        <div class="fact"><b data-fecha></b>a la noche</div>
-        <div class="fact"><b data-hora></b>(Argentina)</div>
+        <div class="fact"><b data-fecha></b>Fecha</div>
+        <div class="fact"><b data-hora></b>Hora de Argentina</div>
         <div class="fact"><b>En vivo</b>60 minutos</div>
         <div class="fact"><b>$0</b>100% gratis</div>
       </div>
@@ -146,18 +151,13 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:20px 
 <footer class="w">Ribel - Rafaela, Argentina</footer>
 
 <script>
-/* ============================================================
-   CADA VEZ QUE HAGAS UNA MASTERCLASS NUEVA, CAMBIÁ SOLO ESTO
-   ============================================================ */
-var CONFIG = {
-  edicion:    "2026-11-02",                                      // identifica esta masterclass en la lista de anotados
-  fechaTexto: "Lunes 2/11",                                      // día que se muestra en la página
-  hora:       "19:30 hs",                                        // horario que se muestra (hora de Argentina)
-  grupo:      "https://chat.whatsapp.com/KDOvq77MTOQ2JiYWljuU6C" // link del grupo de WhatsApp
-};
-/* ============================================================ */
+/* Esta página sirve para todas las masterclasses. Los datos de cada una (título, puntos,
+   fecha, hora, grupo) están en la tabla "masterclass_clases" de Supabase.
+   El link elige cuál mostrar:  masterclass.html?m=circulatorio
+   Sin "?m=" muestra la próxima masterclass publicada. */
 
-// Base de datos (Supabase). La clave "publishable" es pública: solo permite ENVIAR anotados, no leer nada.
+// Base de datos (Supabase). La clave "publishable" es pública: solo permite leer las masterclasses
+// publicadas y ENVIAR anotados, no leer la lista de anotados.
 var SUPABASE_URL = "https://ldvukasrgskzrmskrqde.supabase.co";
 var SUPABASE_KEY = "sb_publishable_ixATKY00uzUmtXd5JCerfw_qmSw5bsn";
 
@@ -176,10 +176,66 @@ var PAISES = [
 
 function $(id){ return document.getElementById(id); }
 
-// Completa fecha, hora y link con los datos de CONFIG
-Array.prototype.forEach.call(document.querySelectorAll('[data-fecha]'), function(el){ el.textContent = CONFIG.fechaTexto; });
-Array.prototype.forEach.call(document.querySelectorAll('[data-hora]'), function(el){ el.textContent = CONFIG.hora; });
-$('grupo').href = CONFIG.grupo;
+var CLASE = null;   // la masterclass que se está mostrando
+
+function hoyAR(){
+  try { return new Date().toLocaleDateString('en-CA', {timeZone:'America/Argentina/Buenos_Aires'}); }
+  catch(e){ var d = new Date(); return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2); }
+}
+
+function mostrarEstado(txt){
+  $('contenido').hidden = true;
+  $('estado').hidden = false;
+  $('estado').textContent = txt;
+}
+
+function mostrar(c){
+  CLASE = c;
+  document.title = c.titulo + ' | Masterclass gratuita | Ribel';
+  $('titulo').textContent = c.titulo;
+  $('bajada').textContent = c.bajada || '';
+  var ol = $('puntos');
+  ol.textContent = '';
+  (c.puntos || []).forEach(function(t, i){
+    var li = document.createElement('li');
+    var n = document.createElement('span'); n.className = 'n'; n.textContent = String(i + 1);
+    var tx = document.createElement('span'); tx.className = 'tx'; tx.textContent = t;
+    li.appendChild(n); li.appendChild(tx); ol.appendChild(li);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-fecha]'), function(el){ el.textContent = c.fecha_texto; });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-hora]'), function(el){ el.textContent = c.hora_texto; });
+  $('grupo').href = c.grupo_url;
+  if(c.fecha < hoyAR()){            // ya pasó: no se puede anotar nadie más
+    $('vistaForm').hidden = true;
+    $('vistaPasada').hidden = false;
+  }
+  $('estado').hidden = true;
+  $('contenido').hidden = false;
+}
+
+// Busca la masterclass en la base de datos
+(function cargar(){
+  var slug = null;
+  try { slug = new URLSearchParams(location.search).get('m'); } catch(e){}
+  if(slug !== null && !/^[a-z0-9-]{1,40}$/.test(slug)){ mostrarEstado('No encontramos esta masterclass.'); return; }
+  var url = SUPABASE_URL + '/rest/v1/masterclass_clases'
+    + '?select=slug,taller,titulo,bajada,puntos,fecha,fecha_texto,hora_texto,grupo_url'
+    + '&publicada=eq.true&order=fecha.asc'
+    + (slug ? '&slug=eq.' + encodeURIComponent(slug) : '');
+  fetch(url, {headers: {'apikey': SUPABASE_KEY}})
+    .then(function(res){ if(!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+    .then(function(filas){
+      var c = null;
+      if(slug){ c = filas[0] || null; }
+      else {
+        var hoy = hoyAR();
+        c = filas.filter(function(f){ return f.fecha >= hoy; })[0] || null;
+      }
+      if(!c){ mostrarEstado(slug ? 'No encontramos esta masterclass.' : 'Todavía no hay una masterclass programada. Pronto anunciamos la próxima.'); return; }
+      mostrar(c);
+    })
+    .catch(function(){ mostrarEstado('No pudimos cargar la página. Probá de nuevo en un rato.'); });
+})();
 
 // Selector de país
 var sel = $('pais');
@@ -218,7 +274,7 @@ function normalizar(p, raw){
 var enviando = false;
 $('f').addEventListener('submit', function(e){
   e.preventDefault();
-  if(enviando) return;
+  if(enviando || !CLASE) return;
   var nombre = $('nombre').value.trim();
   var p = PAISES[sel.value];
   var tel = normalizar(p, $('num').value);
@@ -237,7 +293,7 @@ $('f').addEventListener('submit', function(e){
   fetch(SUPABASE_URL + '/rest/v1/masterclass', {
     method: 'POST',
     headers: {'apikey': SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal'},
-    body: JSON.stringify([{edicion: CONFIG.edicion, nombre: nombre, pais: p.n, whatsapp: tel}]),
+    body: JSON.stringify([{edicion: CLASE.slug, nombre: nombre, pais: p.n, whatsapp: tel}]),
     keepalive: true
   }).then(function(res){
     if(!res.ok) throw new Error('HTTP ' + res.status);
