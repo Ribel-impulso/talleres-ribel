@@ -75,6 +75,21 @@ input[type=text],select,textarea{width:100%;font:.95rem var(--body);padding:11px
 .row .nm{min-width:0}
 .row .nm b{display:block;font-size:.98rem}
 .row .nm small{color:var(--muted);display:block;overflow-wrap:anywhere}
+details.insc{padding:0}
+details.insc>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px}
+details.insc>summary::-webkit-details-marker{display:none}
+details.insc>summary .hd{flex:1;min-width:0}
+details.insc>summary::after{content:"\25BE";color:var(--accent2);font-size:1rem;flex:none}
+details.insc[open]>summary::after{content:"\25B4"}
+details.insc .cbody{padding:0 12px 12px;border-top:1px solid var(--line)}
+.srch{margin:0 0 10px}
+.srch input{width:100%;font:.95rem var(--body);padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.cnt{font-size:.8rem;color:var(--muted);margin:0 0 8px}
+.ck{display:flex;align-items:center;gap:8px;font-size:.9rem;min-height:40px}
+.ck input{width:20px;height:20px;accent-color:var(--accent2);flex:none}
+.cks{display:flex;flex-wrap:wrap;gap:4px 18px;margin:10px 0 2px}
+.pdfok{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.9rem;margin:2px 0 10px}
+input[type=file]{width:100%;font:.9rem var(--body);padding:8px 0}
 .pill{font-size:.74rem;font-weight:700;border-radius:999px;padding:3px 10px;white-space:nowrap}
 .p0{background:var(--warn-bg);color:var(--warn-tx)}
 .p1{background:var(--soft);color:var(--accent2)}
@@ -118,9 +133,48 @@ details.box[open]>summary{margin-bottom:10px}
 .btn.warn{background:#a33}
 .btn.warn:hover{background:#c24444}
 .bd{display:inline-block;margin-left:6px;background:var(--warn-bg);color:var(--warn-tx);border-radius:999px;padding:0 7px;font-size:.7rem;font-weight:700}
+
+details.grp{margin:0 0 8px;border-bottom:1px solid var(--line)}
+details.grp>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font:800 .8rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 2px;min-height:44px}
+details.grp>summary::-webkit-details-marker{display:none}
+details.grp>summary::before{content:"\25B8";font-size:.9rem;color:var(--accent2)}
+details.grp[open]>summary::before{content:"\25BE"}
+details.grp .cn{background:var(--soft);color:var(--accent2);border-radius:999px;padding:0 8px;font-size:.72rem}
+details.grp .tabs,details.grp .prox,details.grp .note{margin:2px 0 12px}
+.seg{display:flex;gap:6px;background:var(--soft);border-radius:999px;padding:4px;margin:0 0 16px}
+.seg button{flex:1;border:0;background:transparent;color:var(--accent2);font:700 .9rem var(--body);padding:10px 12px;border-radius:999px;cursor:pointer;min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--btn);color:var(--on-btn)}
+input[type=date]{width:100%;font:.95rem var(--body);padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+.mchd .btn{white-space:nowrap;flex:none}
+.mchd{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.mct{font:800 1.25rem var(--display);letter-spacing:-.015em}
+.lnk{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:10px}
+.lnk code{font-size:.8rem;overflow-wrap:anywhere;min-width:0}
+.mcn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
+
+/* ---- Talleres: vista simple (selector + pestañas) ---- */
+.seg{margin-bottom:18px}
+.pick label{display:block;font:700 .75rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.pick select{width:100%;font:600 1rem var(--body);padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+#resu{margin:16px 0 4px}
+.rt{font:800 1.3rem var(--display);letter-spacing:-.02em}
+.rs{color:var(--muted);font-size:.88rem;margin-top:2px}
+.tabs2{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:14px 0 16px;overflow-x:auto}
+.tb2{background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:12px 12px;font:600 .92rem var(--body);color:var(--muted);cursor:pointer;white-space:nowrap;min-height:44px;position:relative}
+.tb2[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent2)}
+.tb2 .n{display:inline-block;background:var(--soft);color:var(--accent2);border-radius:999px;padding:0 7px;font-size:.72rem;font-weight:700;margin-left:4px}
+.tb2 .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-left:5px;vertical-align:middle}
+.sec2{margin-bottom:26px}
+.sec2 h3{font:800 1.05rem var(--display);margin:0 0 2px}
+.d2{margin:0 0 12px;color:var(--muted);font-size:.86rem}
+.vacio{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:20px;text-align:center;color:var(--muted)}
+.row{box-shadow:none}
+.certbox{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:.9rem}.certbox input[type=file]{max-width:100%;font-size:.85rem}
+.nueva select{width:100%}
+.acts{display:flex;flex-direction:column;gap:8px}.acts .btn{width:100%}
 </style>
 <div class="w">
-  <div class="top"><div class="logo" role="img" aria-label="Ribel Rafaela"></div><h1>Panel de talleres</h1><button class="tag" id="btnAct" type="button" hidden>Actualizar</button><button class="tag" id="btnOut" type="button" hidden style="margin-left:0">Salir</button></div>
+  <div class="top"><div class="logo" role="img" aria-label="Ribel Rafaela"></div><h1 id="ttl">Panel de talleres</h1><button class="tag" id="btnAct" type="button" hidden>Actualizar</button><button class="tag" id="btnOut" type="button" hidden style="margin-left:0">Salir</button></div>
   <div id="login" hidden>
     <form class="box" id="loginForm">
       <h2>Entrar al panel</h2>
@@ -132,12 +186,14 @@ details.box[open]>summary{margin-bottom:10px}
     </form>
   </div>
   <div id="app" hidden>
-    <p class="sub">Inscripciones y pedidos de aviso de tus talleres.</p>
-    <div class="lbl" id="lblA" hidden>Talleres activos</div><div class="tabs" id="tabs"></div>
-    <div id="proxw"></div>
-    <div class="stats" id="stats"></div>
-    <div id="blocks"></div>
-    <div id="list"></div>
+    <div class="seg" id="seg"><button type="button" data-a="view" data-v="tal" aria-pressed="true">Talleres</button><button type="button" data-a="view" data-v="mc" aria-pressed="false">Masterclasses</button></div>
+    <div id="vTal">
+    <div class="pick"><label for="selT">Taller</label><select id="selT"></select></div>
+    <div id="resu"></div>
+    <div class="tabs2" id="tabs2" role="tablist"></div>
+    <div id="pane"></div>
+    </div>
+    <div id="vMc" hidden></div>
   </div>
 </div>
 <div id="toast" role="status" hidden></div>
@@ -274,21 +330,41 @@ function labFecha(x){
   var f=fechaDe(x),h0=hoy0().getTime();
   return f?DIAS[f.getDay()]+' '+f.getDate()+'/'+(f.getMonth()+1)+(f.getTime()<h0?' · pasó':''):'Sin fecha';
 }
-function tabsHtml(t){
+function tabsHtml(t,lista){
   var h0=hoy0().getTime(),nx=proximoId();
-  return activosOrd().map(function(x){
+  return lista.map(function(x){
     var f=fechaDe(x),p=paraAtender(x),pasado=f&&f.getTime()<h0,es=x.id===nx;
     return '<button class="tab'+(pasado?' past':' live')+(es?' next':'')+'" type="button" data-a="tab" data-id="'+esc(x.id)+'" aria-pressed="'+(!!t&&x.id===t.id)+'">'+
       '<small>'+labFecha(x)+(es?'<span class="nx">Próximo</span>':'')+(p?'<span class="bd">'+p+'</span>':'')+'</small><span class="tn">'+esc(x.nombre)+'</span></button>';
   }).join('');
 }
-function proxHtml(t){
-  var otros=TAL.filter(function(x){return !activo(x)}).sort(porNombre);
-  if(!otros.length)return '';
-  return '<div class="lbl">Próximamente · sin fecha definida</div><div class="prox">'+otros.map(function(x){
+/* ---------- Grupos desplegables: con fecha / próximamente / ya pasaron ---------- */
+var OPEN={prox:true,sinf:false,pas:false};
+function grupoDe(x){
+  var f=fechaDe(x);
+  if(f===null)return 'sinf';
+  return f.getTime()>=hoy0().getTime()?'prox':'pas';
+}
+function grupoHtml(g,titulo,items,t,vacio){
+  var cnt=items.reduce(function(n,x){return n+paraAtender(x)},0);
+  var abierto=OPEN[g];
+  var cuerpo;
+  if(!items.length)cuerpo='<p class="note">'+vacio+'</p>';
+  else if(g==='sinf')cuerpo='<div class="prox">'+items.map(function(x){
     var p=paraAtender(x);
     return '<button class="pchip" type="button" data-a="tab" data-id="'+esc(x.id)+'" aria-pressed="'+(!!t&&x.id===t.id)+'">'+esc(x.nombre)+(p?'<span class="bd">'+p+'</span>':'')+'</button>';
   }).join('')+'</div>';
+  else cuerpo='<div class="tabs">'+tabsHtml(t,items)+'</div>';
+  return '<details class="grp" data-g="'+g+'"'+(abierto?' open':'')+'><summary><span>'+titulo+'</span><span class="cn">'+items.length+'</span>'+(cnt?'<span class="bd">'+cnt+' para atender</span>':'')+'</summary>'+cuerpo+'</details>';
+}
+function gruposHtml(t){
+  var ac=activosOrd(),h0=hoy0().getTime();
+  var prox=ac.filter(function(x){return fechaDe(x).getTime()>=h0});
+  var pas=ac.filter(function(x){return fechaDe(x).getTime()<h0});
+  var sin=TAL.filter(function(x){return !activo(x)}).sort(porNombre);
+  return grupoHtml('prox','Talleres con fecha',prox,t,'No hay talleres con fecha próxima.')+
+    grupoHtml('sinf','Próximamente · sin fecha',sin,t,'No hay talleres sin fecha.')+
+    (pas.length?grupoHtml('pas','Ya pasaron',pas,t,''):'');
 }
 function editForm(kind,r){
   var h='<div class="ask"><label class="fld"><span>Nombre</span><input id="en" type="text" value="'+esc(r.nombre)+'"></label>'+
@@ -303,62 +379,108 @@ function tools(kind,r){
   if(DEL!==null&&String(DEL)===String(r.id))return '<div class="ask danger">¿Eliminar a <b>'+esc(r.nombre)+'</b>? No se puede deshacer.<div class="acts"><button class="btn warn" type="button" data-a="delok" data-k="'+kind+'" data-id="'+esc(r.id)+'">Sí, eliminar</button><button class="btn ghost" type="button" data-a="cancel">No, dejar</button></div></div>';
   return '<div class="mini"><button class="back" type="button" data-a="edit" data-id="'+esc(r.id)+'">Corregir datos</button><button class="back danger" type="button" data-a="del" data-id="'+esc(r.id)+'">Eliminar</button></div>';
 }
+var TAB='insc';
+function optT(x,t){
+  var p=paraAtender(x),f=fechaDe(x);
+  return '<option value="'+esc(x.id)+'"'+(t&&x.id===t.id?' selected':'')+'>'+(f?labFecha(x)+' · ':'')+esc(x.nombre)+(p?' — '+p+' por atender':'')+'</option>';
+}
+function optG(tit,items,t){return items.length?'<optgroup label="'+tit+'">'+items.map(function(x){return optT(x,t)}).join('')+'</optgroup>':''}
+function tab2(v,txt,n,aviso){
+  return '<button class="tb2" type="button" role="tab" data-a="tabsw" data-v="'+v+'" aria-selected="'+(TAB===v)+'">'+txt+(n!=null?' <span class="n">'+n+'</span>':'')+(aviso?'<span class="dot" title="Para atender"></span>':'')+'</button>';
+}
+function pagasCon(t){return rowsOf(t).filter(function(r){return (r.estado==='pago'||r.estado==='entregado')&&r.user_id})}
+function btnHab(t,k,txt,ghost){
+  var c=pagasCon(t),faltan=c.filter(function(r){return !r[k]}).length,hay=rowsOf(t).filter(function(r){return r[k]}).length,o='';
+  if(faltan>0||!hay)o+='<button class="btn'+(ghost?' ghost':'')+'" type="button" data-a="habtodas" data-k="'+k+'" data-v="on">Habilitar '+txt+' a todas las que pagaron</button>';
+  if(hay>0)o+='<button class="btn ghost" type="button" data-a="habtodas" data-k="'+k+'" data-v="off">Deshabilitar '+txt+' a todas ('+hay+' habilitada'+(hay===1?'':'s')+')</button>';
+  return o;
+}
+function panelAjustes(t){
+  return '<div class="sec2"><h3>Datos del taller</h3><p class="d2">Las alumnas ven todo esto en su aula.</p>'+
+    '<label class="fld" for="fe"><span>Fecha del taller</span><input id="fe" type="text" value="'+esc(t.fecha)+'" placeholder="Ej: sábado 5/12 a las 14 hs"></label>'+
+    '<label class="fld" for="tcert"><span>Nombre del taller en el certificado</span><input id="tcert" type="text" value="'+esc(t.titulo_cert)+'" placeholder="'+esc(t.nombre)+'"><small style="color:var(--muted)">Si lo dejás vacío, usa "'+esc(t.nombre)+'".</small></label>'+
+    '<label class="fld" for="zoom"><span>Link de Zoom</span><input id="zoom" type="text" value="'+esc(t.zoom_link)+'" placeholder="Pegá el link de Zoom"></label>'+
+    '<label class="fld" for="grab"><span>Link de la grabación (YouTube no listado)</span><input id="grab" type="text" value="'+esc(t.grabacion_url)+'" placeholder="Pegá el link de la grabación"></label>'+
+    '<div class="fld"><span>Material en PDF</span>'+
+    (t.material_url?'<div class="pdfok"><b>✓ PDF cargado</b><a href="'+esc(t.material_url)+'" target="_blank" rel="noopener" style="color:var(--accent2);font-weight:700">Ver</a><button class="back" type="button" data-a="pdfquitar" style="padding:0">Quitar</button></div>':'<p class="note" style="margin:0 0 4px">Todavía no cargaste el PDF.</p>')+
+    '<label class="fld" for="pdf" style="margin:0"><span style="font-weight:500;color:var(--muted)">'+(t.material_url?'Reemplazar por otro PDF:':'Elegí el archivo PDF:')+'</span><input id="pdf" type="file" accept="application/pdf"></label>'+
+    '<p class="note" id="pdfst" style="margin:4px 0 0"></p></div>'+
+    '<button class="btn full" type="button" data-a="savet">Guardar datos</button></div>'+
+    '<div class="sec2"><h3>Habilitar en el aula</h3><p class="d2">Las alumnas ven la grabación, el material y el certificado cuando vos lo habilitás. Podés hacerlo con todas las que pagaron, o una por una desde su ficha.</p>'+
+    '<div class="acts">'+btnHab(t,'acceso_material','grabación y material',false)+btnHab(t,'certificado','certificado',true)+'</div></div>';
+}
+function panelEspera(t){
+  var wl=wlOf(t);
+  if(!wl.length)return '<div class="vacio">Nadie pidió aviso para este taller.</div>';
+  var h='<details class="box"><summary>Mensaje para la lista de espera</summary><p class="d">Las personas que pidieron aviso reciben un mensaje armado con su nombre. La fecha sale de "Ajustes".</p>'+
+    '<label class="fld" for="mj"><span>Mensaje</span><textarea id="mj" rows="5">'+esc(MSG)+'</textarea></label>'+
+    '<p class="note">Se completa solo: {nombre}, {taller} y {fecha}.</p>'+
+    '<p class="note" style="margin-bottom:4px"><b>Así le llega a '+esc(String(wl[0].nombre).split(' ')[0])+':</b></p><div class="ask" id="prev" style="margin-top:0">'+esc(fill(MSG,wl[0],t))+'</div>'+
+    '<p class="err" id="errf" style="margin-top:8px"></p></details>';
+  return h+wl.map(function(r){
+    var av=r.estado==='avisado';
+    return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(r.nombre)+'</b><small>'+esc(r.whatsapp)+(r.email?' · '+esc(r.email):'')+'</small></div><span class="pill p'+(av?2:0)+'">'+(av?'Avisada':'En espera')+'</span></div>'+
+      '<div class="ac one"><button class="btn" type="button" data-a="wav" data-id="'+esc(r.id)+'">'+(av?'Avisar de nuevo por WhatsApp':'Avisar por WhatsApp')+'</button></div>'+
+      (av?'<button class="back" type="button" data-a="wback" data-id="'+esc(r.id)+'">Me equivoqué, volver a En espera</button>':'')+tools('a',r)+'</div>';
+  }).join('');
+}
+var NEW=false;
+function formNueva(t){
+  return '<div class="box nueva"><h2>Nueva alumna en '+esc(t.nombre)+'</h2><p class="d">Se la anota y se le crea el acceso a Mi aula. Al terminar te doy su contraseña para pasársela.</p>'+
+  '<label class="fld" for="nn"><span>Nombre y apellido</span><input id="nn" type="text" autocomplete="off"></label>'+
+  '<label class="fld" for="nw"><span>WhatsApp</span><input id="nw" type="text" inputmode="tel" placeholder="Ej: 3492 123456" autocomplete="off"></label>'+
+  '<label class="fld" for="ne"><span>Mail (es su usuario en Mi aula)</span><input id="ne" type="email" autocomplete="off"></label>'+
+  '<label class="fld" for="nm"><span>Modalidad</span><select id="nm"><option value="vivo">En vivo por Zoom (con grabación)</option><option value="grabacion">Solo grabación</option></select></label>'+
+  '<label class="fld" for="ns"><span>Estado del pago</span><select id="ns"><option value="pendiente">Pendiente</option><option value="pago">Ya pagó</option></select></label>'+
+  '<div style="display:flex;gap:8px"><label class="fld" for="np" style="flex:1"><span>Monto (opcional)</span><input id="np" type="text" inputmode="decimal" placeholder="15000"></label>'+
+  '<label class="fld" for="nc" style="width:110px"><span>Moneda</span><select id="nc"><option value="ARS">ARS</option><option value="USD">USD</option></select></label></div>'+
+  '<p class="err" id="nerr" style="margin:0 0 8px"></p>'+
+  '<div class="acts"><button class="btn" type="button" data-a="nuevaok">Anotar alumna</button><button class="btn ghost" type="button" data-a="nuevano">Cancelar</button></div></div>';
+}
+function panelInsc(){
+  var t0=curT();
+  return (NEW&&t0?formNueva(t0):'<div style="margin:0 0 12px"><button class="btn ghost" type="button" data-a="nueva">+ Nueva alumna</button></div>')+'<div class="srch"><label class="fld" for="q" style="margin:0"><span style="position:absolute;left:-9999px">Buscar</span><input id="q" type="search" placeholder="Buscar por nombre o mail (en todos los talleres)" value="'+esc(Q)+'" autocomplete="off"></label></div><div id="inscList"></div>';
+}
 function render(){
   var t=curT();
-  if(!t){var ac=activosOrd();t=ac[0]||TAL.slice().sort(porNombre)[0];if(t)cur=t.id}
-  $('lblA').hidden=!activosOrd().length;
-  $('tabs').innerHTML=tabsHtml(t);
-  $('proxw').innerHTML=proxHtml(t);
+  if(!t){var ac=activosOrd();t=ac[0]||TAL.slice().sort(porNombre)[0];if(t){cur=t.id;if(!activo(t))TAB='espera'}}
   if(!t){
-    $('stats').innerHTML='';$('list').innerHTML='';
-    $('blocks').innerHTML='<div class="box"><h2>No hay talleres cargados</h2><p class="d" style="margin:0">Revisá la tabla talleres en Supabase.</p></div>';
+    $('selT').innerHTML='';$('resu').innerHTML='';$('tabs2').innerHTML='';
+    $('pane').innerHTML='<div class="vacio">No hay talleres cargados. Revisá la tabla talleres en Supabase.</div>';
     return;
   }
-  var rows=rowsOf(t),wl=wlOf(t);
-  var c=[0,0,0];rows.forEach(function(r){var s=EST.indexOf(r.estado);c[s<0?0:s]++});
-  $('stats').innerHTML=statBox(rows.length,'Anotadas')+statBox(c[1]+c[2],'Pagaron')+statBox(c[2],'Entregadas');
-  var sinF=!String(t.fecha||'').trim();
-  var b='<details class="box"'+(sinF?' open':'')+'><summary>Datos del taller</summary><p class="d">La fecha y el link de Zoom quedan guardados para este taller.</p>'+
-    '<label class="fld" for="fe"><span>Fecha del taller</span><input id="fe" type="text" value="'+esc(t.fecha)+'" placeholder="Ej: sábado 5/12 a las 14 hs"></label>'+
-    '<label class="fld" for="zoom"><span>Link de Zoom</span><input id="zoom" type="text" value="'+esc(t.zoom_link)+'" placeholder="Pegá el link de Zoom"></label>'+
-    '<button class="btn full" type="button" data-a="savet">Guardar datos</button></details>';
-  if(wl.length){
-    b+='<details class="box"><summary>Mensaje para la lista de espera</summary><p class="d">Las personas que pidieron aviso reciben un mensaje armado con su nombre. La fecha sale de "Datos del taller".</p>'+
-      '<label class="fld" for="mj"><span>Mensaje</span><textarea id="mj" rows="5">'+esc(MSG)+'</textarea></label>'+
-      '<p class="note">Se completa solo: {nombre}, {taller} y {fecha}.</p>'+
-      '<p class="note" style="margin-bottom:4px"><b>Así le llega a '+esc(String(wl[0].nombre).split(' ')[0])+':</b></p><div class="ask" id="prev" style="margin-top:0">'+esc(fill(MSG,wl[0],t))+'</div>'+
-      '<p class="err" id="errf" style="margin-top:8px"></p></details>';
-  }
-  b+='<details class="box"><summary>Envío por mail</summary><p class="d" style="margin:0">El envío del link de Zoom, del material en PDF y de los certificados lo conectamos en el próximo paso. Por ahora podés escribirles por WhatsApp desde cada tarjeta.</p></details>';
-  $('blocks').innerHTML=b;
-  var l='';
-  if(wl.length){
-    l+='<div class="sect">Lista de espera</div>'+wl.map(function(r){
-      var av=r.estado==='avisado';
-      return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(r.nombre)+'</b><small>'+esc(r.whatsapp)+(r.email?' · '+esc(r.email):'')+'</small></div><span class="pill p'+(av?2:0)+'">'+(av?'Avisada':'En espera')+'</span></div>'+
-        '<div class="ac one"><button class="btn" type="button" data-a="wav" data-id="'+esc(r.id)+'">'+(av?'Avisar de nuevo por WhatsApp':'Avisar por WhatsApp')+'</button></div>'+
-        (av?'<button class="back" type="button" data-a="wback" data-id="'+esc(r.id)+'">Me equivoqué, volver a En espera</button>':'')+tools('a',r)+'</div>';
-    }).join('');
-  }
-  l+='<div class="sect">Inscriptas</div>';
-  l+=rows.length?rows.map(function(r){
-    var s=EST.indexOf(r.estado);if(s<0)s=0;
-    var fwd=s<2?'<button class="btn" type="button" data-a="st" data-id="'+esc(r.id)+'">'+NX[s]+'</button>':'';
-    var back=s>0?'<button class="back" type="button" data-a="back" data-id="'+esc(r.id)+'">'+(s===1?'Me equivoqué, volver a Pendiente':'Volver a Pagó')+'</button>':'';
-    return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(r.nombre)+'</b><small>'+esc(r.email)+' · '+esc(r.whatsapp)+'</small></div><span class="pill p'+s+'">'+ST[s]+'</span></div>'+
-      '<div class="chips"><span class="chip">'+(r.modalidad==='vivo'?'En vivo':'Solo grabación')+'</span>'+(money(r)?'<span class="chip">'+esc(money(r))+'</span>':'')+(r.zoom_enviado?'<span class="chip">Zoom enviado</span>':'')+'</div>'+
-      '<div class="ac'+(s===2?' one':'')+'"><button class="btn ghost" type="button" data-a="wa" data-id="'+esc(r.id)+'">Escribir por WhatsApp</button>'+fwd+'</div>'+back+tools('i',r)+'</div>';
-  }).join(''):'<div class="box"><h2>Todavía no hay inscriptas</h2><p class="d" style="margin:0">Cuando alguien se anote en este taller, aparece acá.</p></div>';
-  $('list').innerHTML=l;
+  var ac2=activosOrd(),h0=hoy0().getTime();
+  var prox=ac2.filter(function(x){return fechaDe(x).getTime()>=h0});
+  var pas=ac2.filter(function(x){return fechaDe(x).getTime()<h0});
+  var sin=TAL.filter(function(x){return !activo(x)}).sort(porNombre);
+  $('selT').innerHTML=optG('Con fecha',prox,t)+optG('Ya pasaron',pas,t)+optG('Próximamente · sin fecha',sin,t);
+  var rows=rowsOf(t),wl=wlOf(t),c=[0,0,0];
+  rows.forEach(function(r){var s=EST.indexOf(r.estado);c[s<0?0:s]++});
+  var f=fechaDe(t);
+  $('resu').innerHTML='<div class="rt">'+esc(t.nombre)+'</div><div class="rs">'+(String(t.fecha||'').trim()?esc(t.fecha)+' · ':'Sin fecha · ')+rows.length+(rows.length===1?' anotada':' anotadas')+' · '+(c[1]+c[2])+' pagaron · '+c[2]+' entregadas</div>';
+  $('tabs2').innerHTML=tab2('insc','Inscriptas',rows.length,pendPago(t)>0)+tab2('espera','Lista de espera',wl.length,sinAvisar(t)>0)+tab2('ajustes','Ajustes',null,false);
+  $('pane').innerHTML=TAB==='ajustes'?panelAjustes(t):TAB==='espera'?panelEspera(t):panelInsc();
+  if(TAB==='insc')pintaInsc();
 }
+document.addEventListener('change',function(e){
+  if(e.target.id==='selT'){
+    cur=e.target.value;NEW=false;EDIT=null;DEL=null;RESETASK=null;Q='';
+    var t=curT();TAB=(t&&!activo(t))?'espera':'insc';
+    render();window.scrollTo(0,0);
+  }
+});
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b||b.dataset.a!=='tabsw')return;
+  TAB=b.dataset.v;NEW=false;EDIT=null;DEL=null;RESETASK=null;render();
+});
 function start(){
   cur=null;EDIT=null;DEL=null;
   showApp();
-  $('tabs').innerHTML='';$('stats').innerHTML='';$('list').innerHTML='';
-  $('blocks').innerHTML='<div class="box"><p class="d" style="margin:0">Cargando…</p></div>';
+  $('resu').innerHTML='';$('tabs2').innerHTML='';$('selT').innerHTML='';
+  $('pane').innerHTML='<div class="vacio">Cargando…</div>';
   cargar().then(render).catch(function(e){
     if(e&&e.message==='AUTH'){clearSes();showLogin('La sesión venció. Entrá de nuevo.');return}
-    $('blocks').innerHTML='<div class="box"><h2>No se pudo cargar</h2><p class="d">Revisá tu conexión y probá de nuevo.</p><button class="btn" type="button" data-a="act">Reintentar</button></div>';
+    $('pane').innerHTML='<div class="box"><h2>No se pudo cargar</h2><p class="d">Revisá tu conexión y probá de nuevo.</p><button class="btn" type="button" data-a="act">Reintentar</button></div>';
   });
 }
 
@@ -371,7 +493,7 @@ $('loginForm').addEventListener('submit',function(e){
     .catch(function(er){$('lerr').textContent=(er.status===400||er.status===401)?'Mail o contraseña incorrectos.':'No se pudo conectar. Probá de nuevo.'})
     .then(function(){$('lgo').disabled=false;$('lgo').textContent='Entrar'});
 });
-$('btnOut').addEventListener('click',function(){clearSes();TAL=[];INS=[];AVI=[];cur=null;showLogin('')});
+$('btnOut').addEventListener('click',function(){clearSes();TAL=[];INS=[];AVI=[];MCL=[];MCA=[];cur=null;MCV='lista';setView('tal');showLogin('')});
 $('btnAct').addEventListener('click',function(){cargar().then(function(){render();toast('Actualizado')}).catch(fallo)});
 document.addEventListener('input',function(e){
   var t=curT();if(!t)return;
@@ -388,8 +510,8 @@ document.addEventListener('click',function(e){
   if(a==='tab'){cur=id;EDIT=null;DEL=null;render();window.scrollTo(0,0);return}
   if(a==='act'){start();return}
   if(a==='savet'){
-    t.fecha=($('fe').value||'').trim();t.zoom_link=($('zoom').value||'').trim();
-    patch('talleres',t.id,{fecha:t.fecha||null,zoom_link:t.zoom_link||null}).then(function(){render();toast('Datos guardados')}).catch(fallo);
+    t.fecha=($('fe').value||'').trim();t.titulo_cert=($('tcert').value||'').trim();t.zoom_link=($('zoom').value||'').trim();t.grabacion_url=($('grab').value||'').trim();
+    patch('talleres',t.id,{fecha:t.fecha||null,titulo_cert:t.titulo_cert||null,zoom_link:t.zoom_link||null,grabacion_url:t.grabacion_url||null}).then(function(){render();toast('Datos guardados')}).catch(fallo);
     return;
   }
   if(a==='st'||a==='back'){
@@ -415,7 +537,7 @@ document.addEventListener('click',function(e){
   }
   if(a==='edit'){EDIT=id;DEL=null;render();return}
   if(a==='del'){DEL=id;EDIT=null;render();return}
-  if(a==='cancel'){EDIT=null;DEL=null;render();return}
+  if(a==='cancel'){EDIT=null;DEL=null;RESETASK=null;render();return}
   if(a==='saveedit'){
     var k=b.dataset.k,lst=k==='i'?INS:AVI,tb=k==='i'?'inscripciones':'avisos';
     var o=lst.filter(function(x){return String(x.id)===String(id)})[0];if(!o)return;
@@ -437,6 +559,475 @@ document.addEventListener('click',function(e){
   if(a==='wback'){
     var v=AVI.filter(function(x){return x.id===id})[0];if(!v)return;
     patch('avisos',id,{estado:'espera'}).then(function(){v.estado='espera';render();toast(v.nombre+' volvió a En espera')}).catch(fallo);
+    return;
+  }
+});
+
+document.addEventListener('toggle',function(e){var d=e.target;if(d&&d.classList&&d.classList.contains('grp')&&d.dataset.g)OPEN[d.dataset.g]=d.open},true);
+
+/* ---------- Masterclasses ---------- */
+var PRECIO_USD='USD 12';
+var MC_MSG_DEF="Hola {nombre}! Gracias por venir a la masterclass. Te cuento que el {fecha} hacemos el taller de {taller}, en vivo por Zoom. Valor: {precio}. Si querés reservar tu lugar, respondeme este mensaje y te paso los datos.";
+var MC_ZMSG_DEF="Hola {nombre}! Te paso el link de Zoom para la masterclass: {fecha} {hora}.\n{link}\nEntrá unos minutos antes. ¡Te espero!";
+var VIEW='tal', MCV='lista', MCS=null, MCF='todos', MCDEL=null, MCEDIT=null, MCSLUGMANUAL=false, MCL=[], MCA=[], MCERR=false;
+function mcKey(x){return String(x.creado_en||x.created_at||'')}
+function mcCargar(){
+  return Promise.all([api('masterclass_clases?select=*'),api('masterclass?select=*')]).then(function(r){
+    MCL=r[0]||[];
+    MCA=(r[1]||[]).sort(function(a,b){var ka=mcKey(a),kb=mcKey(b);if(ka!==kb)return ka<kb?-1:1;return a.id<b.id?-1:1});
+    MCERR=false;
+  }).catch(function(e){if(e&&e.message==='AUTH')throw e;MCERR=true;MCL=[];MCA=[]});
+}
+function hoyISO(){var h=new Date();return h.getFullYear()+'-'+('0'+(h.getMonth()+1)).slice(-2)+'-'+('0'+h.getDate()).slice(-2)}
+function mcClase(s){return MCL.filter(function(x){return x.slug===s})[0]}
+function mcAnot(s){return MCA.filter(function(x){return x.edicion===s})}
+function mcEnv(r){return !!r.propuesta_enviada}
+function mcLink(s){return LANDING+'/masterclass.html?m='+s}
+function mcFechaTxt(iso){
+  var m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})/);if(!m)return '';
+  var d=new Date(+m[1],+m[2]-1,+m[3]),N=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  return N[d.getDay()]+' '+(+m[3])+'/'+(+m[2]);
+}
+function mcCuando(c){return [c.fecha_texto||mcFechaTxt(c.fecha),c.hora_texto].filter(Boolean).join(' · ')||'Fecha a definir'}
+function mcEsProx(c){return !c.fecha||String(c.fecha).slice(0,10)>=hoyISO()}
+function mcTaller(c){return TAL.filter(function(x){return x.nombre===c.taller})[0]}
+function mcFill(txt,r,c){
+  var t=mcTaller(c)||{},ar=String(r.pais||'').toLowerCase()==='argentina';
+  var precio=ar?(t.precio!=null?money(t):'$15.000'):PRECIO_USD;
+  var fecha=String(t.fecha||'').trim()||'(fecha a confirmar)';
+  return txt.replace(/\{nombre\}/g,String(r.nombre||'').split(' ')[0]).replace(/\{taller\}/g,String(c.taller||'').toLowerCase())
+    .replace(/\{fecha\}/g,fecha).replace(/\{precio\}/g,precio);
+}
+function mcFillZ(txt,r,c){
+  return txt.replace(/\{nombre\}/g,String(r.nombre||'').split(' ')[0]).replace(/\{fecha\}/g,mcFechaTxt(c.fecha)||'').replace(/\{hora\}/g,c.hora_texto?'a las '+c.hora_texto:'')
+    .replace(/\{link\}/g,String(c.zoom_url||'').trim()||'(falta cargar el link)').replace(/[ ]+\n/g,'\n').replace(/ {2,}/g,' ');
+}
+function mcFmtZ(r){
+  var d=new Date(r.zoom_enviado);if(isNaN(d))return 'Zoom enviado';
+  return 'Zoom enviado '+d.getDate()+'/'+(d.getMonth()+1);
+}
+function mcFmtEnv(r){
+  var d=new Date(r.propuesta_enviada);if(isNaN(d))return 'Enviada';
+  return 'Enviada '+d.getDate()+'/'+(d.getMonth()+1);
+}
+function mcSlugSug(n){
+  var stop={masaje:1,protocolo:1,de:1,del:1,con:1,el:1,la:1,los:1,las:1,para:1,y:1,taller:1,curso:1,en:1,a:1};
+  var w=String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(function(x){return x&&!stop[x]});
+  return w[0]||'clase';
+}
+function mcHead(){
+  return '<div class="mchd"><div><h2 class="mct">Masterclasses</h2><p class="sub" style="margin:2px 0 0">Una clase de introducción gratuita por cada taller.</p></div>'+
+    '<button class="btn" type="button" data-a="mcnew">+ Nueva</button></div>';
+}
+function mcCard(c){
+  var n=mcAnot(c.slug),sin=n.filter(function(r){return !mcEnv(r)}).length,prox=mcEsProx(c);
+  var tag=!c.publicada?'<span class="pill p0">BORRADOR</span>':(prox?'<span class="pill p1">PRÓXIMA</span>':'<span class="pill p2">PASÓ</span>');
+  return '<div class="box mcc"><div class="chips" style="margin:0 0 8px">'+tag+'<span class="chip">Presenta: '+esc(c.taller)+'</span></div>'+
+    '<h2>'+esc(c.titulo)+'</h2><p class="d" style="margin:2px 0 8px"><b>'+esc(mcCuando(c))+'</b></p>'+
+    '<div class="lnk"><code>'+esc(mcLink(c.slug).replace('https://',''))+'</code><button class="back" type="button" data-a="mccopy" data-id="'+esc(c.slug)+'" style="padding:2px 0 0">Copiar link</button></div>'+
+    '<div class="mcn"><div class="stat"><b>'+n.length+'</b><span>anotados</span></div><div class="stat"><b>'+sin+'</b><span>sin propuesta</span></div></div>'+
+    '<div class="ac" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px"><button class="btn" type="button" data-a="mcver" data-id="'+esc(c.slug)+'">Ver anotados</button>'+
+    '<button class="btn ghost" type="button" data-a="mcpag" data-id="'+esc(c.slug)+'">Ver página</button></div>'+
+    '<div class="mini"><button class="back" type="button" data-a="mcedit" data-id="'+esc(c.slug)+'">Editar</button>'+
+    '<button class="back" type="button" data-a="mcpub" data-id="'+esc(c.slug)+'">'+(c.publicada?'Pasar a borrador':'Publicar')+'</button></div></div>';
+}
+function mcLista(){
+  var prox=MCL.filter(mcEsProx).sort(function(a,b){return String(a.fecha||'9')<String(b.fecha||'9')?-1:1});
+  var pas=MCL.filter(function(c){return !mcEsProx(c)}).sort(function(a,b){return String(a.fecha)<String(b.fecha)?1:-1});
+  var h=mcHead();
+  h+='<div class="lbl">Próximas</div>'+(prox.length?prox.map(mcCard).join(''):'<div class="box"><p class="d" style="margin:0">No hay masterclasses próximas. Creá una con "+ Nueva".</p></div>');
+  if(pas.length)h+='<div class="lbl">Pasadas</div>'+pas.map(mcCard).join('');
+  return h;
+}
+function mcAnotRow(r,c){
+  var env=mcEnv(r);
+  var del=(MCDEL!==null&&String(MCDEL)===String(r.id))?
+    '<div class="ask danger">¿Eliminar a <b>'+esc(r.nombre)+'</b>? No se puede deshacer.<div class="acts"><button class="btn warn" type="button" data-a="mcdelok" data-id="'+esc(r.id)+'">Sí, eliminar</button><button class="btn ghost" type="button" data-a="mccancel">No, dejar</button></div></div>':
+    '<div class="mini">'+(env?'<button class="back" type="button" data-a="mcunsend" data-id="'+esc(r.id)+'">Me equivoqué, volver a Sin enviar</button>':'')+'<button class="back danger" type="button" data-a="mcdel" data-id="'+esc(r.id)+'">Eliminar</button></div>';
+  return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(r.nombre)+'</b><small>'+esc(r.pais||'')+' · +'+esc(r.whatsapp)+'</small></div><span class="pill '+(env?'p2':'p0')+'">'+(env?esc(mcFmtEnv(r)):'Sin enviar')+'</span></div>'+
+    '<div class="ac one"><button class="btn'+(env?' ghost':'')+'" type="button" data-a="mcsend" data-id="'+esc(r.id)+'">'+(env?'Enviar propuesta de nuevo':'Enviar propuesta por WhatsApp')+'</button></div>'+
+    '<div class="ac one" style="margin-top:8px"><button class="btn'+(r.zoom_enviado?' ghost':'')+'" type="button" data-a="mczoom" data-id="'+esc(r.id)+'">'+(r.zoom_enviado?'Enviar link de Zoom de nuevo':'Enviar link de Zoom por WhatsApp')+'</button></div>'+
+    (r.zoom_enviado?'<p class="note" style="margin:6px 0 0">'+esc(mcFmtZ(r))+' · <button class="back" type="button" data-a="mczunsend" data-id="'+esc(r.id)+'" style="padding:0">Marcar como no enviado</button></p>':'')+del+'</div>';
+}
+function mcAnotView(){
+  var c=mcClase(MCS);if(!c){MCV='lista';return mcLista()}
+  var all=mcAnot(c.slug),env=all.filter(mcEnv).length,sz=all.filter(function(r){return !r.zoom_enviado}).length;
+  var lst=all.filter(function(r){return MCF==='todos'||(MCF==='sin'?!mcEnv(r):MCF==='sinz'?!r.zoom_enviado:mcEnv(r))});
+  var zmsg=c.mensaje_zoom==null||c.mensaje_zoom===''?MC_ZMSG_DEF:c.mensaje_zoom;
+  var msg=c.mensaje==null||c.mensaje===''?MC_MSG_DEF:c.mensaje;
+  var h='<button class="back" type="button" data-a="mcback" style="padding-left:0">‹ Masterclasses</button>'+
+    '<h2 class="mct" style="margin:4px 0 2px">'+esc(c.titulo)+'</h2><p class="sub">'+esc(mcCuando(c))+' · Presenta: '+esc(c.taller)+'</p>'+
+    '<div class="stats">'+statBox(all.length,'Anotados')+statBox(env,'Propuesta enviada')+statBox(all.length-env,'Sin enviar')+'</div>'+
+    '<details class="box"><summary>Mensaje de la propuesta</summary><p class="d">Lo que está entre llaves se completa solo: {nombre}, {taller}, {fecha} y {precio}.</p>'+
+    '<label class="fld" for="mcmsg"><span>Mensaje</span><textarea id="mcmsg" rows="6">'+esc(msg)+'</textarea></label>'+
+    '<button class="btn full" type="button" data-a="mcsavemsg">Guardar mensaje</button></details>'+
+    '<details class="box"'+(c.zoom_url?'':' open')+'><summary>Link de Zoom y mensaje</summary><p class="d">Pegá el link de Zoom de la clase. El mensaje se completa solo: {nombre}, {fecha}, {hora} y {link}.</p>'+
+    '<label class="fld" for="mczurl"><span>Link de Zoom</span><input id="mczurl" type="text" value="'+esc(c.zoom_url)+'" placeholder="https://zoom.us/j/…"></label>'+
+    '<label class="fld" for="mczmsg"><span>Mensaje</span><textarea id="mczmsg" rows="5">'+esc(zmsg)+'</textarea></label>'+
+    '<button class="btn full" type="button" data-a="mczsave">Guardar link y mensaje</button></details>'+
+    '<div class="prox" style="margin-top:6px">'+[['todos','Todos ('+all.length+')'],['sin','Sin propuesta ('+(all.length-env)+')'],['env','Con propuesta ('+env+')'],['sinz','Sin link de Zoom ('+sz+')']].map(function(x){
+      return '<button class="pchip" type="button" data-a="mcf" data-id="'+x[0]+'" aria-pressed="'+(MCF===x[0])+'">'+x[1]+'</button>'}).join('')+'</div>';
+  h+=lst.length?lst.map(function(r){return mcAnotRow(r,c)}).join(''):'<div class="box"><h2>'+(all.length?'Nadie en este filtro':'Todavía no hay anotados')+'</h2><p class="d" style="margin:0">'+(all.length?'Probá con otro filtro.':'Cuando alguien se registre en la página, aparece acá.')+'</p></div>';
+  return h;
+}
+function mcFld(id,label,val,ph,type){
+  return '<label class="fld" for="'+id+'"><span>'+label+'</span><input id="'+id+'" type="'+(type||'text')+'" value="'+esc(val)+'" placeholder="'+esc(ph||'')+'"></label>';
+}
+function mcForm(){
+  var c=MCEDIT?mcClase(MCEDIT):null,ed=!!c;c=c||{};
+  var pts=Array.isArray(c.puntos)?c.puntos:[];
+  var tall=TAL.slice().sort(function(a,b){var fa=fechaDe(a)?0:1,fb=fechaDe(b)?0:1;if(fa!==fb)return fa-fb;return a.nombre<b.nombre?-1:1});
+  var opt=tall.map(function(t){return '<option value="'+esc(t.nombre)+'"'+(t.nombre===c.taller?' selected':'')+'>'+esc(t.nombre)+(t.fecha?' · '+esc(t.fecha):'')+'</option>'}).join('');
+  var f0=tall[0]&&!ed?tall[0].nombre:c.taller;
+  var h='<button class="back" type="button" data-a="mcback" style="padding-left:0">‹ Masterclasses</button><h2 class="mct" style="margin:4px 0 12px">'+(ed?'Editar masterclass':'Nueva masterclass')+'</h2><div class="box">'+
+    '<label class="fld" for="mctaller"><span>Taller que presenta</span><select id="mctaller">'+opt+'</select></label>'+
+    mcFld('mctitulo','Título',c.titulo,'Ej: Perfeccionarte también llena tu agenda')+
+    mcFld('mcbaj','Frase debajo del título',c.bajada,'Ej: Una clase en vivo para masajistas…')+
+    '<div class="fld"><span>Qué van a ver (3 puntos)</span>'+[0,1,2].map(function(i){return '<input id="mcp'+i+'" type="text" style="margin-bottom:6px" value="'+esc(pts[i]||'')+'" placeholder="Punto '+(i+1)+'" aria-label="Punto '+(i+1)+'">'}).join('')+'</div>'+
+    mcFld('mcfecha','Fecha',String(c.fecha||'').slice(0,10),'','date')+
+    mcFld('mchora','Hora (Argentina)',c.hora_texto,'Ej: 19:30 hs')+
+    mcFld('mcgrupo','Link del grupo de WhatsApp',c.grupo_url,'https://chat.whatsapp.com/…')+
+    '<label class="fld" for="mcmsgn"><span>Mensaje de la propuesta</span><textarea id="mcmsgn" rows="5">'+esc(c.mensaje==null||c.mensaje===''?MC_MSG_DEF:c.mensaje)+'</textarea></label>'+
+    mcFld('mcslug','Nombre del link (corto, sin espacios)',ed?c.slug:mcSlugSug(f0),'ej: facial')+
+    '<p class="note" id="mclinkp">Link del anuncio: '+esc(mcLink(ed?c.slug:mcSlugSug(f0)).replace('https://',''))+'</p>'+
+    '<label class="fld" style="display:flex;gap:8px;align-items:center"><input id="mcpub" type="checkbox"'+(!ed||c.publicada?' checked':'')+'> <span style="margin:0">Publicada (la página de registro la muestra)</span></label>'+
+    '<p class="err" id="mcerr"></p>'+
+    '<div class="ask" style="background:none;padding:0;margin:0"><div class="acts"><button class="btn" type="button" data-a="mcsave">Guardar masterclass</button><button class="btn ghost" type="button" data-a="mcback">Cancelar</button></div></div></div>';
+  return h;
+}
+function renderMc(){
+  var el=$('vMc');if(!el)return;
+  if(MCERR){el.innerHTML='<div class="box"><h2>No se pudieron cargar las masterclasses</h2><p class="d">Revisá tu conexión y probá de nuevo.</p><button class="btn" type="button" data-a="act">Reintentar</button></div>';return}
+  el.innerHTML=MCV==='anot'?mcAnotView():MCV==='form'?mcForm():mcLista();
+}
+function setView(v){
+  VIEW=v;$('vTal').hidden=v!=='tal';$('vMc').hidden=v!=='mc';
+  document.querySelector('[data-v="tal"]').setAttribute('aria-pressed',v==='tal');
+  document.querySelector('[data-v="mc"]').setAttribute('aria-pressed',v==='mc');
+  $('ttl').textContent=v==='tal'?'Panel de talleres':'Panel de masterclasses';
+  if(v==='mc')renderMc();
+  window.scrollTo(0,0);
+}
+var _render=render;render=function(){_render();renderMc()};
+var _cargar=cargar;cargar=function(){return _cargar().then(mcCargar)};
+function mcGo(v,s){MCV=v;if(s!==undefined)MCS=s;MCDEL=null;renderMc();window.scrollTo(0,0)}
+function patchSlug(slug,d){
+  return api('masterclass_clases?slug=eq.'+encodeURIComponent(slug),{method:'PATCH',body:d,rep:true}).then(function(r){if(!r||!r.length)throw new Error('NOSAVE')});
+}
+document.addEventListener('input',function(e){
+  if(e.target.id==='mcmsg'&&MCS){var c=mcClase(MCS);if(c)c.mensaje=e.target.value}
+  if(e.target.id==='mcslug'){MCSLUGMANUAL=true;var p=$('mclinkp');if(p)p.textContent='Link del anuncio: '+mcLink(e.target.value.trim()).replace('https://','')}
+});
+document.addEventListener('change',function(e){
+  if(e.target.id==='mctaller'&&!MCEDIT&&!MCSLUGMANUAL){var s=mcSlugSug(e.target.value);$('mcslug').value=s;$('mclinkp').textContent='Link del anuncio: '+mcLink(s).replace('https://','')}
+});
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b||!b.dataset.a)return;
+  var a=b.dataset.a,id=b.dataset.id;
+  if(a==='view'){setView(b.dataset.v);return}
+  if(a.indexOf('mc')!==0)return;
+  var c=mcClase(MCS);
+  if(a==='mcback'){MCEDIT=null;mcGo('lista');return}
+  if(a==='mcnew'){MCEDIT=null;MCSLUGMANUAL=false;mcGo('form');return}
+  if(a==='mcedit'){MCEDIT=id;MCSLUGMANUAL=true;mcGo('form');return}
+  if(a==='mcver'){MCF='todos';mcGo('anot',id);return}
+  if(a==='mcpag'){window.open(mcLink(id),'_blank');return}
+  if(a==='mccopy'){
+    var l=mcLink(id);
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(l).then(function(){toast('Link copiado')},function(){toast(l)});else toast(l);
+    return;
+  }
+  if(a==='mcpub'){
+    var k=mcClase(id);if(!k)return;
+    patchSlug(id,{publicada:!k.publicada}).then(function(){k.publicada=!k.publicada;renderMc();toast(k.publicada?'Publicada':'Pasó a borrador')}).catch(fallo);
+    return;
+  }
+  if(a==='mcf'){MCF=id;renderMc();return}
+  if(a==='mccancel'){MCDEL=null;renderMc();return}
+  if(a==='mcdel'){MCDEL=id;renderMc();return}
+  if(a==='mcdelok'){
+    api('masterclass?id=eq.'+encodeURIComponent(id),{method:'DELETE',rep:true}).then(function(r){
+      if(!r||!r.length)throw new Error('NODEL');
+      MCA=MCA.filter(function(x){return String(x.id)!==String(id)});MCDEL=null;renderMc();toast('Eliminado');
+    }).catch(function(er){if(er&&er.message==='NODEL'){MCDEL=null;renderMc();toast('No se pudo eliminar')}else fallo(er)});
+    return;
+  }
+  if(a==='mcsend'){
+    var r=MCA.filter(function(x){return String(x.id)===String(id)})[0];if(!r||!c)return;
+    var txt=($('mcmsg')?$('mcmsg').value:(c.mensaje||MC_MSG_DEF))||MC_MSG_DEF;
+    window.open('https://wa.me/'+String(r.whatsapp).replace(/\D/g,'')+'?text='+encodeURIComponent(mcFill(txt,r,c)),'_blank');
+    var now=new Date().toISOString();
+    patch('masterclass',r.id,{propuesta_enviada:now}).then(function(){r.propuesta_enviada=now;renderMc();toast('Marcado como enviado: '+r.nombre)}).catch(fallo);
+    return;
+  }
+  if(a==='mczsave'){
+    if(!c)return;var zu=($('mczurl').value||'').trim(),zm=($('mczmsg').value||'').trim()||MC_ZMSG_DEF;
+    patchSlug(c.slug,{zoom_url:zu||null,mensaje_zoom:zm}).then(function(){c.zoom_url=zu||null;c.mensaje_zoom=zm;renderMc();toast('Link y mensaje guardados')}).catch(fallo);
+    return;
+  }
+  if(a==='mczoom'){
+    var rz=MCA.filter(function(x){return String(x.id)===String(id)})[0];if(!rz||!c)return;
+    var zu2=($('mczurl')?$('mczurl').value:(c.zoom_url||'')).trim();
+    if(!zu2){toast('Primero pegá el link de Zoom arriba y guardalo');var bx=$('mczurl');if(bx){bx.focus()}return}
+    var zt=($('mczmsg')?$('mczmsg').value:(c.mensaje_zoom||MC_ZMSG_DEF))||MC_ZMSG_DEF,cc=Object.assign({},c,{zoom_url:zu2});
+    window.open('https://wa.me/'+String(rz.whatsapp).replace(/\D/g,'')+'?text='+encodeURIComponent(mcFillZ(zt,rz,cc)),'_blank');
+    var ahora=new Date().toISOString();
+    patch('masterclass',rz.id,{zoom_enviado:ahora}).then(function(){rz.zoom_enviado=ahora;renderMc();toast('Zoom marcado como enviado: '+rz.nombre)}).catch(fallo);
+    return;
+  }
+  if(a==='mczunsend'){
+    var rq=MCA.filter(function(x){return String(x.id)===String(id)})[0];if(!rq)return;
+    patch('masterclass',rq.id,{zoom_enviado:null}).then(function(){rq.zoom_enviado=null;renderMc();toast(rq.nombre+': Zoom sin enviar')}).catch(fallo);
+    return;
+  }
+  if(a==='mcunsend'){
+    var r2=MCA.filter(function(x){return String(x.id)===String(id)})[0];if(!r2)return;
+    patch('masterclass',r2.id,{propuesta_enviada:null}).then(function(){r2.propuesta_enviada=null;renderMc();toast(r2.nombre+' volvió a Sin enviar')}).catch(fallo);
+    return;
+  }
+  if(a==='mcsavemsg'){
+    if(!c)return;var m=($('mcmsg').value||'').trim()||MC_MSG_DEF;
+    patchSlug(c.slug,{mensaje:m}).then(function(){c.mensaje=m;toast('Mensaje guardado')}).catch(fallo);
+    return;
+  }
+  if(a==='mcsave'){
+    var er=$('mcerr');er.textContent='';
+    var ed=!!MCEDIT,slug=($('mcslug').value||'').trim().toLowerCase();
+    var fecha=$('mcfecha').value||'',titulo=($('mctitulo').value||'').trim();
+    if(!titulo){er.textContent='Escribí el título.';return}
+    if(!fecha){er.textContent='Elegí la fecha de la masterclass.';return}
+    if(!/^[a-z0-9-]{2,30}$/.test(slug)){er.textContent='El nombre del link solo puede tener letras sin tilde, números y guiones (sin espacios).';return}
+    if(!ed&&mcClase(slug)){er.textContent='Ya existe una masterclass con ese nombre de link. Cambialo.';return}
+    var pts=[0,1,2].map(function(i){return ($('mcp'+i).value||'').trim()}).filter(Boolean);
+    var d={taller:$('mctaller').value,titulo:titulo,bajada:($('mcbaj').value||'').trim()||null,puntos:pts,fecha:fecha,fecha_texto:mcFechaTxt(fecha),
+      hora_texto:($('mchora').value||'').trim()||null,grupo_url:($('mcgrupo').value||'').trim()||null,mensaje:($('mcmsgn').value||'').trim()||MC_MSG_DEF,publicada:$('mcpub').checked};
+    b.disabled=true;
+    var p=ed?patchSlug(MCEDIT,d).then(function(){var k=mcClase(MCEDIT);for(var f in d)k[f]=d[f]}):
+      (d.slug=slug,api('masterclass_clases',{method:'POST',body:[d],rep:true}).then(function(r){MCL.push((r&&r[0])||d)}));
+    p.then(function(){MCEDIT=null;mcGo('lista');toast(ed?'Cambios guardados':'Masterclass creada')}).catch(function(x){b.disabled=false;fallo(x)});
+    return;
+  }
+});
+
+/* ---------- Inscriptas: buscador, fichas desplegables, aula ---------- */
+var Q='', OPENI={}, PASS={}, RESETASK=null;
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}
+function pintaInsc(){
+  var el=$('inscList');if(!el)return;
+  var t=curT();if(!t)return;
+  var q=norm(Q).trim();
+  var rows=q?INS.filter(function(r){return norm(r.nombre+' '+r.email+' '+r.whatsapp).indexOf(q)>=0}):rowsOf(t);
+  var h='';
+  if(q)h+='<p class="cnt">'+rows.length+(rows.length===1?' resultado':' resultados')+' en todos los talleres</p>';
+  else h+='<p class="cnt">'+rows.length+(rows.length===1?' inscripta':' inscriptas')+' en este taller</p>';
+  h+=rows.length?rows.map(function(r){return filaInsc(r,!!q)}).join(''):'<div class="box"><h2>'+(q?'No encontramos a nadie':'Todavía no hay inscriptas')+'</h2><p class="d" style="margin:0">'+(q?'Probá con otro nombre o mail.':'Cuando alguien se anote en este taller, aparece acá.')+'</p></div>';
+  el.innerHTML=h;
+}
+function msgClave(p){
+  return 'Hola '+String(p.nombre||'').split(' ')[0]+'! Te paso tus datos nuevos de Mi aula.\nEntrá en: talleres.ribelgestion.com/aula.html\nMail: '+p.email+'\nContraseña: '+p.password;
+}
+function certBox(r){
+  var h='<div class="certbox"><b>Certificado</b>';
+  if(r.certificado_url){
+    h+='<p class="note" style="margin:2px 0 6px">Tiene un certificado propio cargado. Es el que va a descargar.</p><div class="pdfok"><b>✓ Cargado</b><a href="'+esc(r.certificado_url)+'" target="_blank" rel="noopener" style="color:var(--accent2);font-weight:700">Ver</a><button class="back" type="button" data-a="certquitar" data-id="'+esc(r.id)+'" style="padding:0">Quitar (vuelve al automático)</button></div>';
+  }else{
+    h+='<p class="note" style="margin:2px 0 6px">Sale el certificado automático con su nombre. Si querés uno especial, subilo acá (PDF).</p>';
+  }
+  return h+'<input type="file" accept="application/pdf" data-certfile="'+esc(r.id)+'"><p class="note" id="cst'+esc(r.id)+'" style="margin:4px 0 0"></p></div>';
+}
+function filaInsc(r,conTaller){
+  var s=EST.indexOf(r.estado);if(s<0)s=0;
+  var fwd=s<2?'<button class="btn" type="button" data-a="st" data-id="'+esc(r.id)+'">'+NX[s]+'</button>':'';
+  var back=s>0?'<button class="back" type="button" data-a="back" data-id="'+esc(r.id)+'">'+(s===1?'Me equivoqué, volver a Pendiente':'Volver a Pagó')+'</button>':'';
+  var cuenta=r.user_id?
+    '<div class="cks"><label class="ck"><input type="checkbox" data-ck="acceso_material" data-id="'+esc(r.id)+'"'+(r.acceso_material?' checked':'')+'> Grabación y material habilitados</label>'+
+    '<label class="ck"><input type="checkbox" data-ck="certificado" data-id="'+esc(r.id)+'"'+(r.certificado?' checked':'')+'> Certificado habilitado</label></div>'+certBox(r):
+    '<div class="ask" style="margin-top:10px"><b>Sin cuenta en Mi aula.</b> Se anotó antes de que existiera. Creale el acceso y se genera su contraseña.<div class="acts"><button class="btn" type="button" data-a="crearacceso" data-id="'+esc(r.id)+'">Crear acceso a Mi aula</button></div></div>';
+  var clave='';
+  if(r.user_id){
+    var p=PASS[r.id];
+    if(p){
+      clave='<div class="ask"><b>Nueva contraseña generada.</b> Copiala o mandala ahora: después no se puede volver a ver.<div class="res2" style="background:var(--card);border-radius:10px;padding:10px;margin:8px 0;white-space:pre-line;overflow-wrap:anywhere">'+esc(msgClave(p))+'</div>'+
+        '<div class="acts"><button class="btn" type="button" data-a="clavewa" data-id="'+esc(r.id)+'">Enviar por WhatsApp</button><button class="btn ghost" type="button" data-a="clavecopy" data-id="'+esc(r.id)+'">Copiar mensaje</button><button class="btn ghost" type="button" data-a="clavecerrar" data-id="'+esc(r.id)+'">Cerrar</button></div></div>';
+    }else if(RESETASK!==null&&String(RESETASK)===String(r.id)){
+      clave='<div class="ask danger">¿Generar una contraseña nueva para <b>'+esc(r.nombre)+'</b>? La anterior deja de funcionar.<div class="acts"><button class="btn warn" type="button" data-a="claveok" data-id="'+esc(r.id)+'">Sí, generar</button><button class="btn ghost" type="button" data-a="cancel">No</button></div></div>';
+    }else{
+      clave='<button class="back" type="button" data-a="clave" data-id="'+esc(r.id)+'">Generar nueva contraseña</button>';
+    }
+  }
+  return '<details class="row insc" data-id="'+esc(r.id)+'"'+(OPENI[r.id]?' open':'')+'><summary><div class="hd"><div class="nm"><b>'+esc(r.nombre)+'</b><small>'+esc(r.email)+'</small></div><span class="pill p'+s+'">'+ST[s]+'</span></div></summary>'+
+    '<div class="cbody"><small style="display:block;color:var(--muted);margin:8px 0 0">'+esc(r.whatsapp)+'</small>'+
+    '<div class="chips">'+(conTaller?'<span class="chip">'+esc(r.taller)+'</span>':'')+'<span class="chip">'+(r.modalidad==='vivo'?'En vivo':'Solo grabación')+'</span>'+(money(r)?'<span class="chip">'+esc(money(r))+'</span>':'')+'</div>'+
+    cuenta+
+    '<div class="ac'+(s===2?' one':'')+'"><button class="btn ghost" type="button" data-a="wa" data-id="'+esc(r.id)+'">Escribir por WhatsApp</button>'+fwd+'</div>'+back+
+    (clave?'<div style="margin-top:6px">'+clave+'</div>':'')+tools('i',r)+'</div></details>';
+}
+document.addEventListener('input',function(e){if(e.target.id==='q'){Q=e.target.value;pintaInsc()}});
+document.addEventListener('toggle',function(e){var d=e.target;if(d&&d.classList&&d.classList.contains('insc'))OPENI[d.dataset.id]=d.open},true);
+document.addEventListener('change',function(e){
+  var k=e.target.dataset&&e.target.dataset.ck;
+  if(k){
+    var r=INS.filter(function(x){return String(x.id)===String(e.target.dataset.id)})[0];if(!r)return;
+    var v=e.target.checked,d={};d[k]=v;
+    patch('inscripciones',r.id,d).then(function(){r[k]=v;toast(v?'Habilitado para '+r.nombre:'Deshabilitado para '+r.nombre)}).catch(function(x){e.target.checked=!v;fallo(x)});
+    return;
+  }
+  if(e.target.id==='pdf'&&e.target.files&&e.target.files[0])subirPdf(e.target.files[0]);
+  if(e.target.dataset&&e.target.dataset.certfile&&e.target.files&&e.target.files[0])subirCert(e.target.dataset.certfile,e.target.files[0]);
+});
+function slugT(s){return norm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'taller'}
+function pdfNombre(u){var m=String(u||'').match(/\/materiales\/([^?#]+)$/);return m?m[1]:''}
+function borrarPdf(u){var n=pdfNombre(u);if(!n)return Promise.resolve();return token().then(function(tk){return fetch(SB_URL+'/storage/v1/object/materiales/'+encodeURIComponent(n),{method:'DELETE',headers:{apikey:SB_KEY,Authorization:'Bearer '+tk}})}).catch(function(){})}
+function subirCert(id,file){
+  var r=INS.filter(function(x){return String(x.id)===String(id)})[0],st=$('cst'+id);if(!r||!st)return;
+  if(file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name)){st.textContent='El archivo tiene que ser un PDF.';return}
+  if(file.size>50*1024*1024){st.textContent='El PDF pesa más de 50 MB.';return}
+  st.textContent='Subiendo '+file.name+'…';
+  var nombre='certificado-'+id+'-'+Math.random().toString(36).slice(2,10)+Date.now().toString(36)+'.pdf',viejo=r.certificado_url;
+  token().then(function(tk){
+    return fetch(SB_URL+'/storage/v1/object/materiales/'+nombre,{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tk,'Content-Type':'application/pdf','x-upsert':'true'},body:file});
+  }).then(function(x){
+    if(x.status===401)throw new Error('AUTH');
+    if(!x.ok)return x.text().then(function(tx){var er=new Error('SUBIDA');er.det=x.status+': '+String(tx).slice(0,140);throw er});
+    var u=SB_URL+'/storage/v1/object/public/materiales/'+nombre;
+    return patch('inscripciones',r.id,{certificado_url:u,certificado:true}).then(function(){r.certificado_url=u;r.certificado=true;if(viejo)borrarPdf(viejo);OPENI[r.id]=true;pintaInsc();toast('Certificado cargado para '+r.nombre)});
+  }).catch(function(e){
+    if(e&&e.message==='SUBIDA'){var s=$('cst'+id);if(s)s.textContent='No se pudo subir ('+(e.det||'sin detalle')+').';return}
+    fallo(e);
+  });
+}
+function subirPdf(file){
+  var t=curT(),st=$('pdfst');if(!t)return;
+  if(file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name)){st.textContent='El archivo tiene que ser un PDF.';return}
+  if(file.size>50*1024*1024){st.textContent='El PDF pesa más de 50 MB. Probá con uno más liviano.';return}
+  st.textContent='Subiendo '+file.name+'…';
+  var rnd=Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+  var nombre=slugT(t.nombre)+'-'+rnd+'.pdf',viejo=t.material_url;
+  token().then(function(tk){
+    return fetch(SB_URL+'/storage/v1/object/materiales/'+nombre,{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tk,'Content-Type':'application/pdf','x-upsert':'true'},body:file});
+  }).then(function(r){
+    if(r.status===401)throw new Error('AUTH');
+    if(!r.ok)return r.text().then(function(tx){var m=tx;try{var j=JSON.parse(tx);m=j.message||j.error||tx}catch(x){}var er=new Error('SUBIDA');er.det=r.status+': '+String(m).slice(0,160);throw er});
+    var u=SB_URL+'/storage/v1/object/public/materiales/'+nombre;
+    return patch('talleres',t.id,{material_url:u}).then(function(){t.material_url=u;if(viejo)borrarPdf(viejo);render();toast('PDF cargado')});
+  }).catch(function(e){
+    if(e&&e.message==='SUBIDA'){var s2=$('pdfst');if(s2)s2.textContent='No se pudo subir el PDF ('+(e.det||'sin detalle')+').';return}
+    if(e&&e.message&&e.message!=='AUTH'&&e.message!=='NOSAVE'&&e.message.indexOf('HTTP')!==0){var s3=$('pdfst');if(s3)s3.textContent='No se pudo subir el PDF: '+e.message;return}
+    fallo(e);
+  });
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b||!b.dataset.a)return;
+  var a=b.dataset.a,id=b.dataset.id,t=curT();
+  if(a==='certquitar'){
+    var rc=INS.filter(function(x){return String(x.id)===String(id)})[0];if(!rc)return;var uc=rc.certificado_url;
+    patch('inscripciones',rc.id,{certificado_url:null}).then(function(){rc.certificado_url=null;borrarPdf(uc);OPENI[rc.id]=true;pintaInsc();toast('Certificado quitado: vuelve al automático')}).catch(fallo);
+    return;
+  }
+  if(a==='pdfquitar'&&t){
+    var u=t.material_url;
+    patch('talleres',t.id,{material_url:null}).then(function(){t.material_url=null;borrarPdf(u);render();toast('PDF quitado')}).catch(fallo);
+    return;
+  }
+  if(a==='habtodas'&&t){
+    var k=b.dataset.k,nv=b.dataset.v==='on',d={};d[k]=nv;
+    var url,mias;
+    if(nv){
+      var pag=rowsOf(t).filter(function(r){return r.estado==='pago'||r.estado==='entregado'});
+      if(!pag.length){toast('Todavía no hay alumnas con el pago confirmado en este taller');return}
+      var conC=pag.filter(function(r){return r.user_id});
+      if(!conC.length){toast('Las que pagaron no tienen cuenta en Mi aula. Tocá su nombre y creales el acceso.');return}
+      mias=conC.filter(function(r){return !r[k]});
+      if(!mias.length){toast('Ya están habilitadas todas las que pagaron');return}
+      url='inscripciones?taller=eq.'+encodeURIComponent(t.nombre)+'&user_id=not.is.null&estado=in.(pago,entregado)';
+    }else{
+      mias=rowsOf(t).filter(function(r){return r[k]});
+      if(!mias.length){toast('No hay nadie habilitada');return}
+      url='inscripciones?taller=eq.'+encodeURIComponent(t.nombre)+'&'+k+'=eq.true';
+    }
+    b.disabled=true;
+    api(url,{method:'PATCH',body:d,rep:true}).then(function(r){
+      mias.forEach(function(x){x[k]=nv});
+      render();var n=(r&&r.length)||mias.length;toast((nv?'Habilitado para ':'Deshabilitado para ')+n+(n===1?' alumna':' alumnas'));
+    }).catch(function(e){b.disabled=false;fallo(e)});
+    return;
+  }
+  if(a==='nueva'){NEW=true;render();var f=$('nn');if(f)f.focus();return}
+  if(a==='nuevano'){NEW=false;render();return}
+  if(a==='nuevaok'&&t){
+    var nm=($('nn').value||'').trim(),nw=($('nw').value||'').trim(),ne=($('ne').value||'').trim().toLowerCase(),er=$('nerr');
+    if(!nm||!nw||!ne){er.textContent='Completá nombre, WhatsApp y mail.';return}
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(ne)){er.textContent='Revisá el mail: parece incompleto.';return}
+    if(rowsOf(t).some(function(x){return String(x.email||'').toLowerCase()===ne})){er.textContent='Ese mail ya está anotado en este taller.';return}
+    var pr=($('np').value||'').trim(),dato={taller:t.nombre,nombre:nm,email:ne,whatsapp:nw,modalidad:$('nm').value,estado:$('ns').value};
+    pr=pr.replace(/\./g,'').replace(',','.');if(pr!==''&&isNaN(Number(pr))){er.textContent='El monto tiene que ser un número.';return}
+    if(pr!==''){dato.precio=Number(pr);dato.moneda=$('nc').value}
+    b.disabled=true;b.textContent='Anotando…';er.textContent='';
+    var nuevoId=null;
+    api('inscripciones',{method:'POST',body:dato,rep:true}).then(function(r){
+      nuevoId=r&&r[0]&&r[0].id;if(nuevoId==null)throw new Error('NOINS');
+      return token();
+    }).then(function(tk){
+      return fetch(SB_URL+'/functions/v1/admin-clave',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tk,'Content-Type':'application/json'},body:JSON.stringify({accion:'crear',email:ne,nombre:nm,whatsapp:nw})});
+    }).then(function(res){
+      return res.json().then(function(j){if(!res.ok)throw new Error('FN');return j});
+    }).then(function(j){
+      if(j.password)PASS[nuevoId]={password:j.password,email:j.email,nombre:nm};
+      OPENI[nuevoId]=true;NEW=false;Q='';
+      return cargar().then(function(){render();toast(j.password?'Alumna anotada. Copiá su contraseña':'Alumna anotada (ese mail ya tenía cuenta)')});
+    }).catch(function(x){
+      if(x&&x.message==='AUTH'){fallo(x);return}
+      if(nuevoId!=null){NEW=false;OPENI[nuevoId]=true;cargar().then(function(){render();toast('Quedó anotada, pero no se pudo crear el acceso. Probá "Crear acceso a Mi aula" en su ficha.')});return}
+      b.disabled=false;b.textContent='Anotar alumna';
+      er.textContent='No se pudo anotar. '+(x&&x.message&&x.message.length<120?x.message:'Probá de nuevo.');
+    });
+    return;
+  }
+  if(a==='crearacceso'){
+    var ri=INS.filter(function(x){return String(x.id)===String(id)})[0];if(!ri)return;
+    if(!String(ri.email||'').trim()){toast('A esta inscripta le falta el mail');return}
+    b.disabled=true;b.textContent='Creando…';
+    token().then(function(tk){
+      return fetch(SB_URL+'/functions/v1/admin-clave',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tk,'Content-Type':'application/json'},body:JSON.stringify({accion:'crear',email:ri.email,nombre:ri.nombre,whatsapp:ri.whatsapp})});
+    }).then(function(res){
+      if(res.status===404)throw new Error('SINFN');
+      return res.json().then(function(j){if(!res.ok)throw new Error(j&&j.error||'ERR');return j});
+    }).then(function(j){
+      if(j.password)PASS[ri.id]={password:j.password,email:j.email,nombre:ri.nombre};
+      OPENI[ri.id]=true;
+      return cargar().then(function(){render();toast(j.password?'Acceso creado':'Ese mail ya tenía cuenta: se vincularon '+j.vinculadas+(j.vinculadas===1?' inscripción':' inscripciones'))});
+    }).catch(function(x){
+      pintaInsc();
+      if(x&&x.message==='SINFN')toast('Falta activar la función de contraseñas en Supabase');
+      else if(x&&x.message==='AUTH')fallo(x);
+      else toast('No se pudo crear el acceso');
+    });
+    return;
+  }
+  if(a==='clave'){RESETASK=id;pintaInsc();return}
+  if(a==='clavecerrar'){delete PASS[id];pintaInsc();return}
+  if(a==='claveok'){
+    var r=INS.filter(function(x){return String(x.id)===String(id)})[0];if(!r)return;
+    b.disabled=true;b.textContent='Generando…';
+    token().then(function(tk){
+      return fetch(SB_URL+'/functions/v1/admin-clave',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tk,'Content-Type':'application/json'},body:JSON.stringify({user_id:r.user_id})});
+    }).then(function(res){
+      if(res.status===404)throw new Error('SINFN');
+      return res.json().then(function(j){if(!res.ok||!j.password)throw new Error(j&&j.error||'ERR');return j});
+    }).then(function(j){PASS[r.id]={password:j.password,email:j.email||r.email,nombre:r.nombre};RESETASK=null;OPENI[r.id]=true;pintaInsc()})
+    .catch(function(x){
+      RESETASK=null;pintaInsc();
+      if(x&&x.message==='SINFN')toast('Falta activar la función de contraseñas en Supabase');
+      else if(x&&x.message==='AUTH')fallo(x);
+      else toast('No se pudo generar la contraseña');
+    });
+    return;
+  }
+  if(a==='clavewa'||a==='clavecopy'){
+    var q=PASS[id];if(!q)return;
+    var inc=INS.filter(function(x){return String(x.id)===String(id)})[0];
+    if(a==='clavewa'){window.open('https://wa.me/'+waNum(inc?inc.whatsapp:'')+'?text='+encodeURIComponent(msgClave(q)),'_blank');return}
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(msgClave(q)).then(function(){toast('Mensaje copiado')},function(){toast('No se pudo copiar')});else toast('No se pudo copiar');
     return;
   }
 });
