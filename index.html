@@ -121,6 +121,11 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:26px 
 .soonwrap>summary::after{content:"Ver";font:600 .85rem var(--body);text-decoration:underline}
 .soonwrap[open]>summary::after{content:"Cerrar"}
 .pay{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;font-size:.93rem;margin-top:10px}
+.pack{border:2px solid var(--accent);border-radius:18px;padding:16px;margin-bottom:12px;background:var(--soft)}
+.packt{font-size:1.15rem;font-weight:800;letter-spacing:-.01em}
+.opt.combo{margin-top:6px;border:2px solid var(--accent);background:var(--card)}
+.aulaFab{position:fixed;right:16px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:5;background:var(--btn);color:var(--on-btn);text-decoration:none;border-radius:999px;padding:12px 18px;font:700 .92rem var(--body);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.aulaFab:hover{background:var(--btn-hover)}
 @media(min-width:560px){.facts{grid-template-columns:repeat(4,1fr)}h1{font-size:2.8rem}}
 </style>
 
@@ -129,18 +134,8 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:26px 
   <div class="logo" role="img" aria-label="Ribel Rafaela"></div>
   <h1>Talleres online para masajistas</h1>
   <p class="sub">Aprendé técnicas y protocolos profesionales en vivo, desde donde estés. Elegí los talleres que quieras y sumá herramientas a tu trabajo.</p>
-  <a href="#talleres" class="btn">Ver talleres</a>
-  <p style="margin:14px 0 0;font-size:.92rem"><a href="aula.html" style="color:var(--accent2);font-weight:700">¿Ya te anotaste? Entrá a Mi aula</a></p>
+    <a href="aula.html" class="btn">¿Ya te anotaste? Entrá a Mi aula</a>
 </header>
-
-<div class="facts">
-  <div class="fact"><b>Sábados</b>cada 15 días</div>
-  <div class="fact"><b>14 hs</b>(Argentina)</div>
-  <div class="fact"><b>Por Zoom</b>en vivo</div>
-  <div class="fact"><b id="factPrecio">$15.000</b>cada taller</div>
-</div>
-
-<div class="alert" id="alert" hidden></div>
 
 <details class="qi">
   <summary>¿Qué incluye cada taller?</summary>
@@ -152,27 +147,10 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:26px 
   </div>
 </details>
 
-
-<div class="promo">
-  <h2>10% de descuento</h2>
-  <p id="promoTxt"></p>
-</div>
-
 <h2 class="t" id="talleres">Los talleres</h2>
 <p class="hint">Tocá cada taller para ver el temario.</p>
 <div class="cur"><span>Ver precios en:</span><div class="seg" role="group" aria-label="Moneda"><button type="button" id="bARS" aria-pressed="true">Pesos (ARS)</button><button type="button" id="bUSD" aria-pressed="false">Dólares (USD)</button></div></div>
 <div id="lista"></div>
-
-<h2 class="t">Todos los talleres incluyen</h2>
-<div class="incl">
-  <div><b>🎥 Grabación</b>Mirala cuando quieras, las veces que necesites.</div>
-  <div><b>📚 Material de estudio</b>Apunte para repasar y aplicar en tu trabajo.</div>
-  <div><b>🎓 Certificación</b>Certificado de participación.</div>
-  <div><b>💻 Zoom en vivo</b>Practicá y hacé tus consultas en el momento.</div>
-</div>
-<div class="pay"><b>Cómo se paga</b> El pago es por transferencia, en pesos o en dólares. Después de inscribirte, desde tu aula nos escribís por WhatsApp y te pasamos los datos para pagar.</div>
-<div class="pay"><b>Solo grabación</b> Si elegís solo la grabación, no participás del Zoom en vivo, pero recibís lo mismo: la grabación, el material de estudio y el certificado. Se envía después de que se dicta el taller.</div>
-</div>
 
 <div class="cart">
   <div class="in">
@@ -185,6 +163,7 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:26px 
   </div>
 </div>
 
+<a href="aula.html" class="aulaFab" aria-label="Ir a tu aula virtual">🎓 Mi aula virtual</a>
 <footer class="w">Ribel - Rafaela, Argentina</footer>
 
 <div class="ov" id="ov" hidden>
@@ -234,10 +213,10 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:26px 
 var WHATSAPP = "5493492219089";
 var PRECIO = 18000;      // taller en vivo, pesos argentinos
 var PRECIO_USD = 12;     // taller en vivo, dólares
-var REC = 18000;         // solo grabación, pesos argentinos
+var REC = 15000;         // solo grabación, pesos argentinos
 var REC_USD = 12;         // solo grabación, dólares
-var DESC = 0.10;         // 10% de descuento
-var DESC_MIN = 2;        // cantidad de talleres (en vivo o grabación) para que se aplique
+var COMBO = 30000;       // los 2 talleres complementarios juntos, pesos argentinos
+var COMBO_USD = 20;      // los 2 talleres complementarios juntos, dólares
 var cur = 'ARS';         // moneda que se está viendo
 
 function hoyAR(){
@@ -265,6 +244,8 @@ var T = [
  {n:"Pulido corporal", d:"Sáb 24/10 · 14 hs", f:"2026-10-24", on:true, rec:true, t:["Qué es el pulido corporal y sus beneficios","Tipos de pulido y productos que se usan","Preparación de la piel y contraindicaciones","Técnica de aplicación paso a paso","Cuidados posteriores y cómo ofrecerlo como servicio"]},
  {n:"Masaje circulatorio", d:"Sáb 7/11 · 14 hs", f:"2026-11-07", on:true, rec:true, t:["Nociones básicas de la circulación","Maniobras de estimulación y drenaje","Indicaciones y contraindicaciones","Secuencia completa de trabajo en piernas","Recomendaciones para tu clienta"]},
  {n:"Protocolo de masaje facial con elementos", d:"Sáb 28/11 · 14 hs", f:"2026-11-28", on:true, rec:true, t:["Preparación y limpieza previa","Elementos de apoyo, uso e higiene","Secuencia de maniobras paso a paso","Contraindicaciones y precauciones","Cierre y cuidados posteriores"]},
+  {n:"Instagram Profesional para Masajistas", d:"Sáb 28/11 · 16:30 hs", f:"2026-11-28", on:true, pack:true, t:["Optimizar tu perfil de Instagram","Crear contenido que conecte","Diseñar reels y publicaciones efectivas","Estrategias para aumentar tu visibilidad"]},
+ {n:"WhatsApp Business para Masajistas", d:"Sáb 5/12 · 16:30 hs", f:"2026-12-05", on:true, pack:true, t:["Configurar WhatsApp Business","Automatizar respuestas y organizar tus chats","Cerrar ventas sin presionar","Crear promociones que vendan"]},
  {n:"Masajeador eléctrico (gun massage)", t:["Cómo funciona el equipo, cabezales y velocidades","Zonas donde se usa y zonas que se evitan","Contraindicaciones","Cómo combinarlo con masaje manual","Cuidado y limpieza del equipo"]},
  {n:"Piedras calientes", t:["Tipos de piedras y su preparación","Control de temperatura y seguridad","Colocación y deslizamientos","Contraindicaciones","Armado de la sesión completa"]},
  {n:"Protocolo spa para pies", t:["Preparación del espacio y materiales","Exfoliación e hidratación","Maniobras de masaje de pies","Secuencia completa del ritual","Cómo presentarlo como servicio"]},
@@ -279,19 +260,8 @@ var T = [
 
 function past(t){ return !!t.f && t.f < HOY; }
 function liveOpen(t){ return !!t.on && !past(t); }
-function recOpen(t){ return !!t.rec && (!!t.on || past(t)); }
+function recOpen(t){ return !!t.rec && past(t); }
 function fechaCorta(f){ var p = f.split('-'); return parseInt(p[2],10) + '/' + parseInt(p[1],10); }
-
-function renderAlert(){
-  var prox = T.filter(function(t){ return t.on && t.f && t.f >= HOY; }).sort(function(a,b){ return a.f < b.f ? -1 : 1; });
-  var pas = T.filter(function(t){ return t.rec && t.f && t.f < HOY; }).sort(function(a,b){ return a.f < b.f ? 1 : -1; });
-  var h = '';
-  if(prox.length) h += 'El próximo taller en vivo es <b>' + prox[0].n + '</b>, el sábado <b>' + fechaCorta(prox[0].f) + '</b> a las 14 hs.';
-  if(pas.length) h += (h ? ' ' : '') + 'Del taller de ' + pas[0].n + ' (' + fechaCorta(pas[0].f) + ') podés comprar la grabación.';
-  var e = document.getElementById('alert');
-  e.innerHTML = h;
-  e.hidden = !h;
-}
 
 var sel = {};   // índice del taller -> 'live' o 'rec'
 function price(k){
@@ -305,20 +275,19 @@ function money(n){
   return (cur === 'USD' ? 'USD ' : '$') + s.join(',');
 }
 function chosen(){ var r = []; T.forEach(function(t,i){ if(sel[i]) r.push({i:i, k:sel[i]}); }); return r; }
+function precioCombo(){ return cur === 'USD' ? COMBO_USD : COMBO; }
 function totals(list){
-  var bruto = 0; list.forEach(function(x){ bruto += price(x.k); });
-  var dto = list.length >= DESC_MIN;
-  return { n:list.length, bruto:bruto, dto:dto, neto: dto ? Math.round(bruto * (1 - DESC) * 100) / 100 : bruto };
+  var bruto = 0, packs = 0;
+  list.forEach(function(x){ bruto += price(x.k); if(T[x.i].pack && x.k === 'live') packs++; });
+  var dto = packs >= 2;
+  return { n:list.length, bruto:bruto, dto:dto, neto: dto ? bruto - (2 * price('live') - precioCombo()) : bruto };
 }
 function detalle(x){ return x.k === 'rec' ? 'solo grabación' : 'en vivo · ' + T[x.i].d; }
-
-document.getElementById('promoTxt').textContent =
-  'Anotate a ' + DESC_MIN + ' talleres (en vivo o solo grabación) y te descontamos el ' + Math.round(DESC*100) + '% del total.';
 
 function refreshPrices(){
   var p = document.querySelectorAll('.pr');
   for(var j = 0; j < p.length; j++) p[j].textContent = money(price(p[j].getAttribute('data-k')));
-  document.getElementById('factPrecio').textContent = money(price('live'));
+  if(window.pintarCombo) pintarCombo();
 }
 function syncCard(i){
   var c = document.getElementById('c' + i);
@@ -331,9 +300,10 @@ function syncCard(i){
   c.classList.toggle('on', !!sel[i]);
 }
 
-renderAlert();
 var lista = document.getElementById('lista');
 var soonBox = document.createElement('div');   // talleres sin fecha: van en una sección plegada al final
+var packBox = document.createElement('div');   // los 2 talleres complementarios
+var pastBox = document.createElement('div');   // talleres que ya se dictaron
 // Orden: próximos con fecha (el más cercano primero), después los que ya pasaron y tienen grabación (el más reciente primero), después los que todavía no tienen fecha.
 function ordenTalleres(){
   var ix = T.map(function(t,i){ return i; });
@@ -367,7 +337,7 @@ if(rec) opts += '<label class="opt" id="o'+i+'rec"><input type="checkbox" id="k'
     '<details class="dt"><summary><span><h3>'+t.n+'</h3><span class="tags">'+tags+'</span><span class="more"></span></span>'+
     '<span class="price pr" data-k="'+kPrice+'"></span></summary>'+
     '<div class="tem"><b>Temario</b><ul>'+t.t.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div></details>' + opts;
-  (live || rec ? lista : soonBox).appendChild(c);
+      (t.pack ? packBox : past(t) ? pastBox : (live || rec ? lista : soonBox)).appendChild(c);
   ['live','rec'].forEach(function(k){
     var inp = document.getElementById('k' + i + k);
     if(!inp) return;
@@ -381,6 +351,29 @@ if(rec) opts += '<label class="opt" id="o'+i+'rec"><input type="checkbox" id="k'
   if(av) av.addEventListener('click', function(){ openAviso(i); });
 });
 
+var PACK_IX = [];
+T.forEach(function(t,i){ if(t.pack) PACK_IX.push(i); });
+if(PACK_IX.length === 2){
+  var packWrap = document.createElement('div');
+  packWrap.className = 'pack';
+  packWrap.innerHTML = '<h3 class="packt">Dos talleres que se complementan</h3><p class="note" style="margin:6px 0 12px">Son dos talleres independientes: podés hacer uno solo o los dos. Si hacés los dos, pagás menos.</p>';
+  packWrap.appendChild(packBox);
+  var combo = document.createElement('label');
+  combo.className = 'opt combo';
+  combo.id = 'comboOpt';
+  combo.innerHTML = '<input type="checkbox" id="comboChk"><span><b>Hacé los 2 talleres</b><small id="comboTxt"></small></span>';
+  packWrap.appendChild(combo);
+  lista.appendChild(packWrap);
+  document.getElementById('comboChk').addEventListener('change', function(){
+    var on = this.checked;
+    PACK_IX.forEach(function(i){ if(on) sel[i] = 'live'; else delete sel[i]; syncCard(i); });
+    upd();
+  });
+  window.pintarCombo = function(){
+    document.getElementById('comboTxt').innerHTML = '<s>' + money(2 * price('live')) + '</s> <strong style="color:var(--accent2)">' + money(precioCombo()) + '</strong> los dos';
+  };
+}
+
 if(soonBox.children.length){
   var soonWrap = document.createElement('details');
   soonWrap.className = 'soonwrap';
@@ -390,13 +383,25 @@ if(soonBox.children.length){
   lista.appendChild(soonWrap);
 }
 
+if(pastBox.children.length){
+  var pastWrap = document.createElement('details');
+  pastWrap.className = 'soonwrap';
+  var np = pastBox.children.length;
+  pastWrap.innerHTML = '<summary><span>Talleres anteriores · ' + np + (np === 1 ? ' taller' : ' talleres') + '</span></summary><p class="note" style="margin:10px 2px 12px">Estos talleres ya se dictaron. Podés comprar la grabación y recibís la grabación, el material de estudio y el certificado.</p>';
+  pastWrap.appendChild(pastBox);
+  lista.appendChild(pastWrap);
+}
+
 function upd(){
+    var cc = document.getElementById('comboChk');
+  if(cc){ var ambos = PACK_IX.every(function(i){ return sel[i] === 'live'; }); cc.checked = ambos; document.getElementById('comboOpt').classList.toggle('on', ambos); }
   var list = chosen(), n = list.length, r = totals(list);
   document.getElementById('cnt').textContent = n===0 ? 'Elegí tus talleres' : n + (n===1 ? ' taller elegido' : ' talleres elegidos');
   document.getElementById('tot').innerHTML = r.dto ? '<s>'+money(r.bruto)+'</s>'+money(r.neto) : money(r.neto);
   var g = document.getElementById('gift');
-  if(r.dto) g.textContent = Math.round(DESC*100) + '% de descuento aplicado';
-  else if(n>0) g.textContent = 'Sumá ' + (DESC_MIN-n) + (DESC_MIN-n===1?' taller más':' talleres más') + ' y tenés ' + Math.round(DESC*100) + '% de descuento';
+    var ps = 0; list.forEach(function(x){ if(T[x.i].pack && x.k === 'live') ps++; });
+  if(r.dto) g.textContent = 'Combo de los 2 talleres aplicado';
+  else if(ps === 1) g.textContent = 'Sumá el otro taller complementario y pagás ' + money(precioCombo()) + ' los dos';
   else g.textContent = '';
   document.getElementById('go').disabled = (n===0);
 }
@@ -409,7 +414,7 @@ function mensaje(){
   m += 'WhatsApp: ' + document.getElementById('whats').value.trim() + '\n';
   m += 'Mail: ' + document.getElementById('mail').value.trim() + '\n\nTalleres:\n';
   m += list.map(function(x){ return '- ' + T[x.i].n + ' (' + detalle(x) + ')'; }).join('\n');
-  m += '\n\nTotal: ' + money(r.neto) + (r.dto ? ' (incluye ' + Math.round(DESC*100) + '% de descuento)' : '');
+    m += '\n\nTotal: ' + money(r.neto) + (r.dto ? ' (precio combo de los 2 talleres)' : '');
   m += '\nMoneda: ' + (cur === 'USD' ? 'dólares (USD)' : 'pesos argentinos (ARS)');
   return m;
 }
@@ -417,7 +422,7 @@ function link(){}
 function openSheet(){
   var list = chosen(), r = totals(list);
   var h = '<ul>' + list.map(function(x){ return '<li>'+T[x.i].n+' <span style="color:var(--muted)">· '+detalle(x)+'</span></li>'; }).join('') + '</ul>';
-  if(r.dto) h += '<div class="r"><span>Subtotal</span><span>'+money(r.bruto)+'</span></div><div class="r"><span>Descuento '+Math.round(DESC*100)+'%</span><span>-'+money(r.bruto-r.neto)+'</span></div>';
+  if(r.dto) h += '<div class="r"><span>Subtotal</span><span>'+money(r.bruto)+'</span></div><div class="r"><span>Descuento combo</span><span>-'+money(r.bruto-r.neto)+'</span></div>';
   h += '<div class="r"><b>Total</b><b>'+money(r.neto)+'</b></div>';
   document.getElementById('res').innerHTML = h;
   document.getElementById('err').textContent = '';
@@ -506,7 +511,7 @@ function inscribir(c, nombre, whats, mail){
     return {
       taller: T[x.i].n, nombre: nombre, email: mail, whatsapp: whats,
       modalidad: x.k === 'rec' ? 'grabacion' : 'vivo',
-      precio: r.dto ? Math.round(p * (1 - DESC) * 100) / 100 : p,
+            precio: (r.dto && T[x.i].pack && x.k === 'live') ? precioCombo() / 2 : p,
       moneda: cur,
       user_id: c.uid
     };
