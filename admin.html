@@ -544,7 +544,15 @@ document.addEventListener('click',function(e){
     var d={nombre:($('en').value||'').trim(),email:($('ee').value||'').trim()||null,whatsapp:($('ew').value||'').trim()};
     if(k==='i')d.modalidad=$('em').value;
     if(!d.nombre){toast('El nombre no puede quedar vacío');return}
-    patch(tb,id,d).then(function(){for(var f in d)o[f]=d[f];EDIT=null;render();toast('Datos corregidos')}).catch(fallo);
+        patch(tb,id,d).then(function(){
+      for(var f in d)o[f]=d[f];
+      if(k==='i'&&o.user_id){
+        var comun={nombre:d.nombre,whatsapp:d.whatsapp};
+        return api('inscripciones?user_id=eq.'+encodeURIComponent(o.user_id),{method:'PATCH',body:comun,rep:true}).then(function(){
+          INS.forEach(function(x){if(x.user_id===o.user_id){x.nombre=d.nombre;x.whatsapp=d.whatsapp}});
+        });
+      }
+    }).then(function(){EDIT=null;render();toast('Datos corregidos')}).catch(fallo);
     return;
   }
   if(a==='delok'){

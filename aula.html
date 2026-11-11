@@ -224,7 +224,15 @@ function cargar(){
     $('cont').innerHTML='<div class="empty">No pudimos cargar tu aula. Revisá tu conexión y <a href="#" id="reint" style="color:var(--accent2);font-weight:700">probá de nuevo</a>.</div>';
   });
 }
-function start(){NOMBRE=(SES&&SES.nombre)||'';showAula();cargar()}
+function start(){
+  NOMBRE=(SES&&SES.nombre)||'';
+  showAula();
+  token().then(function(tk){
+    return fetch(SB_URL+'/rest/v1/rpc/mi_nombre',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tk,'Content-Type':'application/json'},body:'{}'});
+  }).then(function(r){return r.ok?r.json():null}).then(function(n){
+    if(typeof n==='string'&&n.trim())NOMBRE=n.trim();
+  }).catch(function(){}).then(cargar);
+}
 
 /* ---------- Certificado ---------- */
 var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
