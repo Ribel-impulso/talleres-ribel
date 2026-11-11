@@ -215,8 +215,8 @@ var PRECIO = 15000;      // taller en vivo, pesos argentinos
 var PRECIO_USD = 12;     // taller en vivo, dólares
 var REC = 15000;         // solo grabación, pesos argentinos
 var REC_USD = 12;         // solo grabación, dólares
-var COMBO = 25000;       // los 2 talleres complementarios juntos, pesos argentinos
-var COMBO_USD = 20;      // los 2 talleres complementarios juntos, dólares
+var PACK_ARS = {1:15000, 2:25000, 3:33000};   // talleres de redes: 1, 2 o 3
+var PACK_USD = {1:12, 2:20, 3:26};
 var cur = 'ARS';         // moneda que se está viendo
 
 function hoyAR(){
@@ -244,8 +244,9 @@ var T = [
  {n:"Pulido corporal", d:"Sáb 24/10 · 14 hs", f:"2026-10-24", on:true, rec:true, t:["Qué es el pulido corporal y sus beneficios","Tipos de pulido y productos que se usan","Preparación de la piel y contraindicaciones","Técnica de aplicación paso a paso","Cuidados posteriores y cómo ofrecerlo como servicio"]},
  {n:"Masaje circulatorio", d:"Sáb 7/11 · 14 hs", f:"2026-11-07", on:true, rec:true, t:["Nociones básicas de la circulación","Maniobras de estimulación y drenaje","Indicaciones y contraindicaciones","Secuencia completa de trabajo en piernas","Recomendaciones para tu clienta"]},
  {n:"Protocolo de masaje facial con elementos", d:"Sáb 28/11 · 14 hs", f:"2026-11-28", on:true, rec:true, t:["Preparación y limpieza previa","Elementos de apoyo, uso e higiene","Secuencia de maniobras paso a paso","Contraindicaciones y precauciones","Cierre y cuidados posteriores"]},
-  {n:"Instagram Profesional para Masajistas", d:"Sáb 28/11 · 16:30 hs", f:"2026-11-28", on:true, pack:true, t:["Optimizar tu perfil de Instagram","Crear contenido que conecte","Diseñar y editar reels","Estrategias para aumentar tu visibilidad"]},
- {n:"WhatsApp Business para Masajistas", d:"Sáb 5/12 · 16:30 hs", f:"2026-12-05", on:true, pack:true, t:["Configurar WhatsApp Business","Automatizar respuestas y organizar tus chats","Cerrar ventas sin presionar","Crear promociones que vendan"]},
+  {n:"Instagram Profesional para Masajistas", d:"Sáb 28/11 · 16:30 hs", f:"2026-11-28", on:true, pack:true, t:["Configuración de una cuenta profesional: creador o empresa","Nombre de usuario y nombre del perfil","Cómo escribir una biografía estratégica","Fotografía de perfil e identidad profesional","Historias destacadas: organización y contenido","Publicaciones fijadas y organización del feed","Configuración del botón de contacto y vinculación con WhatsApp","Identidad visual: cómo elegir una paleta de colores","Tipografías y coherencia visual","Creación de un Kit de Marca en Canva","Herramientas de Canva para diseñar publicaciones e historias","Resultado práctico: cada participante podrá mejorar su perfil y comenzar a construir una identidad visual coherente para su negocio"]},
+ {n:"Creación de contenido para masajistas", d:"Sáb 5/12 · 16:30 hs", f:"2026-12-05", on:true, pack:true, t:["Qué contenido publicar y para qué","Tipos de contenido: educativo, comercial, confianza y conexión","Cómo identificar temas de interés para potenciales clientes","Cómo utilizar ChatGPT para generar ideas de contenido","Cómo crear guiones para Reels","Estructura de un video: gancho, desarrollo y llamada a la acción","Cómo filmar con el celular: iluminación, encuadres y ángulos","Cómo grabar demostraciones de masajes y mostrar servicios","Edición de videos con CapCut","Subtítulos, textos, música y transiciones","Creación de Reels e historias","Errores frecuentes al crear contenido"]},
+ {n:"WhatsApp Business para Masajistas", d:"Sáb 12/12 · 16:30 hs", f:"2026-12-12", on:true, pack:true, t:["Configuración inicial de WhatsApp Business","Perfil comercial y presentación profesional","Catálogo de servicios: cómo organizar y presentar las propuestas","Mensajes automáticos de bienvenida y ausencia","Respuestas rápidas y atajos","Etiquetas para organizar contactos y consultas","Cómo responder cuando preguntan precios","Cómo abordar a una persona interesada en contratar un servicio","Técnicas de comunicación para facilitar la conversión","Seguimiento de consultas que no concretaron una reserva","Confirmación de turnos y recordatorios","Fidelización y experiencia del cliente","Organización de la agenda y comunicación posservicio"]},
  {n:"Masajeador eléctrico (gun massage)", t:["Cómo funciona el equipo, cabezales y velocidades","Zonas donde se usa y zonas que se evitan","Contraindicaciones","Cómo combinarlo con masaje manual","Cuidado y limpieza del equipo"]},
  {n:"Piedras calientes", t:["Tipos de piedras y su preparación","Control de temperatura y seguridad","Colocación y deslizamientos","Contraindicaciones","Armado de la sesión completa"]},
  {n:"Protocolo spa para pies", t:["Preparación del espacio y materiales","Exfoliación e hidratación","Maniobras de masaje de pies","Secuencia completa del ritual","Cómo presentarlo como servicio"]},
@@ -275,12 +276,12 @@ function money(n){
   return (cur === 'USD' ? 'USD ' : '$') + s.join(',');
 }
 function chosen(){ var r = []; T.forEach(function(t,i){ if(sel[i]) r.push({i:i, k:sel[i]}); }); return r; }
-function precioCombo(){ return cur === 'USD' ? COMBO_USD : COMBO; }
+function packPrecio(n){ return (cur === 'USD' ? PACK_USD : PACK_ARS)[n]; }
 function totals(list){
   var bruto = 0, packs = 0;
   list.forEach(function(x){ bruto += price(x.k); if(T[x.i].pack && x.k === 'live') packs++; });
   var dto = packs >= 2;
-  return { n:list.length, bruto:bruto, dto:dto, neto: dto ? bruto - (2 * price('live') - precioCombo()) : bruto };
+  return { n:list.length, bruto:bruto, packs:packs, dto:dto, neto: dto ? bruto - packs * price('live') + packPrecio(packs) : bruto };
 }
 function detalle(x){ return x.k === 'rec' ? 'solo grabación' : 'en vivo · ' + T[x.i].d; }
 
@@ -353,15 +354,15 @@ if(rec) opts += '<label class="opt" id="o'+i+'rec"><input type="checkbox" id="k'
 
 var PACK_IX = [];
 T.forEach(function(t,i){ if(t.pack) PACK_IX.push(i); });
-if(PACK_IX.length === 2){
+if(PACK_IX.length){
   var packWrap = document.createElement('div');
   packWrap.className = 'pack';
-  packWrap.innerHTML = '<h3 class="packt">Dos talleres que se complementan</h3><p class="note" style="margin:6px 0 12px">Son dos talleres independientes: podés hacer uno solo o los dos. Si hacés los dos, pagás menos.</p>';
+  packWrap.innerHTML = '<h3 class="packt">Talleres de redes para masajistas</h3><p class="note" style="margin:6px 0 12px">Son talleres independientes: podés hacer uno solo o los que quieras. Se complementan entre sí, y cuantos más sumás, menos pagás por cada uno.</p>';
   packWrap.appendChild(packBox);
   var combo = document.createElement('label');
   combo.className = 'opt combo';
   combo.id = 'comboOpt';
-  combo.innerHTML = '<input type="checkbox" id="comboChk"><span><b>Hacé los 2 talleres</b><small id="comboTxt"></small></span>';
+  combo.innerHTML = '<input type="checkbox" id="comboChk"><span><b>Hacé los 3 talleres</b><small id="comboTxt"></small></span>';
   packWrap.appendChild(combo);
   lista.appendChild(packWrap);
   document.getElementById('comboChk').addEventListener('change', function(){
@@ -370,7 +371,7 @@ if(PACK_IX.length === 2){
     upd();
   });
   window.pintarCombo = function(){
-    document.getElementById('comboTxt').innerHTML = '<s>' + money(2 * price('live')) + '</s> <strong style="color:var(--accent2)">' + money(precioCombo()) + '</strong> los dos';
+    document.getElementById('comboTxt').innerHTML = '<s>' + money(3 * packPrecio(1)) + '</s> <strong style="color:var(--accent2)">' + money(packPrecio(3)) + '</strong> los tres<br>Con 2 talleres: ' + money(packPrecio(2));
   };
 }
 
@@ -399,10 +400,10 @@ function upd(){
   document.getElementById('cnt').textContent = n===0 ? 'Elegí tus talleres' : n + (n===1 ? ' taller elegido' : ' talleres elegidos');
   document.getElementById('tot').innerHTML = r.dto ? '<s>'+money(r.bruto)+'</s>'+money(r.neto) : money(r.neto);
   var g = document.getElementById('gift');
-    var ps = 0; list.forEach(function(x){ if(T[x.i].pack && x.k === 'live') ps++; });
-  if(r.dto) g.textContent = 'Combo de los 2 talleres aplicado';
-  else if(ps === 1) g.textContent = 'Sumá el otro taller complementario y pagás ' + money(precioCombo()) + ' los dos';
+      if(r.dto) g.textContent = 'Precio por cantidad aplicado';
+  else if(r.packs === 1) g.textContent = 'Sumá otro taller de redes y pagás ' + money(packPrecio(2)) + ' los dos';
   else g.textContent = '';
+  if(r.packs === 2) g.textContent = 'Sumá el tercero y pagás ' + money(packPrecio(3)) + ' los tres';
   document.getElementById('go').disabled = (n===0);
 }
 
@@ -414,7 +415,7 @@ function mensaje(){
   m += 'WhatsApp: ' + document.getElementById('whats').value.trim() + '\n';
   m += 'Mail: ' + document.getElementById('mail').value.trim() + '\n\nTalleres:\n';
   m += list.map(function(x){ return '- ' + T[x.i].n + ' (' + detalle(x) + ')'; }).join('\n');
-    m += '\n\nTotal: ' + money(r.neto) + (r.dto ? ' (precio combo de los 2 talleres)' : '');
+    m += '\n\nTotal: ' + money(r.neto) + (r.dto ? ' (precio por cantidad)' : '');
   m += '\nMoneda: ' + (cur === 'USD' ? 'dólares (USD)' : 'pesos argentinos (ARS)');
   return m;
 }
@@ -511,7 +512,7 @@ function inscribir(c, nombre, whats, mail){
     return {
       taller: T[x.i].n, nombre: nombre, email: mail, whatsapp: whats,
       modalidad: x.k === 'rec' ? 'grabacion' : 'vivo',
-            precio: (r.dto && T[x.i].pack && x.k === 'live') ? precioCombo() / 2 : p,
+                  precio: (r.dto && T[x.i].pack && x.k === 'live') ? Math.round(packPrecio(r.packs) / r.packs * 100) / 100 : p,
       moneda: cur,
       user_id: c.uid
     };
