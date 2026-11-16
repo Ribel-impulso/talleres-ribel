@@ -4,25 +4,25 @@
 <style>
 /* Panel conectado a Supabase: login, pestañas de talleres activos ordenadas por fecha, inscriptas y lista de espera */
 :root{
-  --bg:#faf5f0; --card:#ffffff; --text:#2d2420; --muted:#6f625a;
-  --accent:#b5566b; --accent2:#8a3a4d; --btn:#8a3a4d; --btn-hover:#b5566b;
-  --line:#eadfd6; --soft:#f5e6e9; --on-btn:#ffffff;
+  --bg:#f9fafb; --card:#ffffff; --text:#111827; --muted:#6b7280;
+  --accent:#4f46e5; --accent2:#4338ca; --btn:#4f46e5; --btn-hover:#4338ca;
+  --line:#e5e7eb; --soft:#eef2ff; --on-btn:#ffffff;
   --warn-bg:#fbefd9; --warn-tx:#7a4a0a; --ok-bg:#e3f2e6; --ok-tx:#1f5a2c;
   --display:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#1c1614; --card:#272019; --text:#f3ebe5; --muted:#b9aca3;
-    --accent:#e08a9f; --accent2:#e08a9f; --btn:#a8475f; --btn-hover:#c05a74;
-    --line:#3a2f29; --soft:#34242a;
+    --bg:#0f172a; --card:#1e293b; --text:#f1f5f9; --muted:#94a3b8;
+    --accent:#a5b4fc; --accent2:#a5b4fc; --btn:#4f46e5; --btn-hover:#6366f1;
+    --line:#334155; --soft:#1e1b4b;
     --warn-bg:#3b2d14; --warn-tx:#f1cf8f; --ok-bg:#173023; --ok-tx:#a8dcb4; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#1c1614; --card:#272019; --text:#f3ebe5; --muted:#b9aca3;
-  --accent:#e08a9f; --accent2:#e08a9f; --btn:#a8475f; --btn-hover:#c05a74;
-  --line:#3a2f29; --soft:#34242a;
+  --bg:#0f172a; --card:#1e293b; --text:#f1f5f9; --muted:#94a3b8;
+  --accent:#a5b4fc; --accent2:#a5b4fc; --btn:#4f46e5; --btn-hover:#6366f1;
+  --line:#334155; --soft:#1e1b4b;
   --warn-bg:#3b2d14; --warn-tx:#f1cf8f; --ok-bg:#173023; --ok-tx:#a8dcb4; color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -49,7 +49,7 @@ h1{font-size:1.45rem;font-weight:800;letter-spacing:-.02em}
 .fld{display:block;margin-bottom:10px}
 .fld span{display:block;font-size:.8rem;font-weight:600;margin-bottom:4px}
 input[type=text],select,textarea{width:100%;font:.95rem var(--body);padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
-.btn{display:inline-block;background:var(--btn);color:var(--on-btn);border:0;border-radius:999px;padding:11px 18px;font:600 .92rem var(--body);cursor:pointer;text-align:center}
+.btn{display:inline-block;background:var(--btn);color:var(--on-btn);border:0;border-radius:10px;padding:11px 18px;font:600 .92rem var(--body);cursor:pointer;text-align:center}
 .btn:hover{background:var(--btn-hover)}
 .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
 .btn.ghost:hover{background:var(--soft)}
@@ -115,7 +115,7 @@ button.tag{background:none;font-family:var(--body);cursor:pointer}
 .lbl{font:800 .78rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
 .tabs{margin-bottom:4px}
 .tab.live{border-color:var(--accent);background:var(--soft)}
-.tab.next{border:2px solid var(--accent);background:var(--soft);box-shadow:0 2px 10px rgba(138,58,77,.18)}
+.tab.next{border:2px solid var(--accent);background:var(--soft);box-shadow:0 2px 10px rgba(79,70,229,.18)}
 .tab .nx{display:inline-block;margin-left:6px;background:var(--accent2);color:#fff;border-radius:999px;padding:0 7px;font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .prox{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .pchip{background:transparent;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:5px 11px;font:600 .8rem var(--body);cursor:pointer}
@@ -186,9 +186,10 @@ input[type=date]{width:100%;font:.95rem var(--body);padding:11px 12px;border-rad
     </form>
   </div>
   <div id="app" hidden>
-    <div class="seg" id="seg"><button type="button" data-a="view" data-v="tal" aria-pressed="true">Talleres</button><button type="button" data-a="view" data-v="mc" aria-pressed="false">Masterclasses</button></div>
+    <div class="seg" id="seg" hidden><button type="button" data-a="view" data-v="tal" aria-pressed="true">Talleres</button><button type="button" data-a="view" data-v="mc" aria-pressed="false">Masterclasses</button></div>
     <div id="vTal">
     <div class="pick"><label for="selT">Taller</label><select id="selT"></select></div>
+    <div id="ntBox" style="margin:10px 0 0"></div>
     <div id="resu"></div>
     <div class="tabs2" id="tabs2" role="tablist"></div>
     <div id="pane"></div>
@@ -297,7 +298,7 @@ var DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 function activo(t){return fechaDe(t)!==null}
 function pendPago(t){return rowsOf(t).filter(function(r){return r.estado==='pendiente'}).length}
 function sinAvisar(t){return wlOf(t).filter(function(r){return r.estado!=='avisado'}).length}
-function paraAtender(t){return pendPago(t)+sinAvisar(t)}
+function paraAtender(t){return pendPago(t)}
 function hoy0(){var h=new Date();return new Date(h.getFullYear(),h.getMonth(),h.getDate())}
 function fechaDe(t){
   var m=String(t.fecha||'').match(/(\d{1,2})\s*\/\s*(\d{1,2})/);
@@ -425,17 +426,52 @@ function panelEspera(t){
   }).join('');
 }
 var NEW=false;
+var NSEL=null;
+function alumnas(){
+  var m={},out=[];
+  INS.forEach(function(r){
+    if(!r.user_id)return;
+    var k=String(r.user_id);
+    if(!m[k]){m[k]={key:k,user_id:r.user_id};out.push(m[k])}
+    m[k].nombre=r.nombre||m[k].nombre;m[k].email=r.email||m[k].email;m[k].whatsapp=r.whatsapp||m[k].whatsapp;
+  });
+  return out.sort(function(a,b){return norm(a.nombre)<norm(b.nombre)?-1:1});
+}
+function resultadosAl(q){
+  var t=curT(),n=norm(q).trim();
+  if(!n)return '<p class="note" style="margin:6px 0 0">Escribí su nombre o mail para buscarla.</p>';
+  var ya=rowsOf(t).map(function(r){return String(r.user_id)});
+  var l=alumnas().filter(function(a){return norm(a.nombre+' '+a.email).indexOf(n)>=0}).slice(0,8);
+  if(!l.length)return '<p class="note" style="margin:6px 0 0">No encontré a nadie con ese nombre. Cargala como alumna nueva abajo.</p>';
+  return l.map(function(a){
+    var ok=ya.indexOf(String(a.user_id))<0;
+    return '<button class="btn ghost" type="button" style="width:100%;text-align:left;margin-top:6px"'+(ok?' data-a="nsel" data-id="'+esc(a.key)+'"':' disabled')+'><b>'+esc(a.nombre)+'</b><br><small>'+esc(a.email)+(ok?'':' · ya está en este taller')+'</small></button>';
+  }).join('');
+}
+function camposPago(){
+  return '<label class="fld" for="nm"><span>Modalidad</span><select id="nm"><option value="vivo">En vivo por Zoom (con grabación)</option><option value="grabacion">Solo grabación</option></select></label>'+
+  '<label class="fld" for="ns"><span>Estado del pago</span><select id="ns"><option value="pendiente">Pendiente</option><option value="pago">Ya pagó</option></select></label>'+
+  '<div style="display:flex;gap:8px"><label class="fld" for="np" style="flex:1"><span>Monto (opcional)</span><input id="np" type="text" inputmode="decimal" placeholder="15000"></label>'+
+  '<label class="fld" for="nc" style="width:110px"><span>Moneda</span><select id="nc"><option value="ARS">ARS</option><option value="USD">USD</option></select></label></div>';
+}
 function formNueva(t){
-  return '<div class="box nueva"><h2>Nueva alumna en '+esc(t.nombre)+'</h2><p class="d">Se la anota y se le crea el acceso a Mi aula. Al terminar te doy su contraseña para pasársela.</p>'+
+  var h='<div class="box nueva"><h2>Sumar alumna a '+esc(t.nombre)+'</h2>';
+  if(NSEL){
+    return h+'<div class="ask" style="margin-top:0"><b>'+esc(NSEL.nombre)+'</b><br><small>'+esc(NSEL.email)+' · '+esc(NSEL.whatsapp)+'</small><br><button class="back" type="button" data-a="nselno" style="padding:6px 0 0">Elegir a otra persona</button></div>'+
+      '<p class="note" style="margin-top:10px">Ya tiene cuenta en Mi aula: se la suma a este taller sin cargar sus datos de nuevo.</p>'+camposPago()+
+      '<p class="err" id="nerr" style="margin:0 0 8px"></p>'+
+      '<div class="acts"><button class="btn" type="button" data-a="nuevaok">Anotar alumna</button><button class="btn ghost" type="button" data-a="nuevano">Cancelar</button></div></div>';
+  }
+  return h+'<p class="d">Si ya es alumna, buscala por nombre. Si es nueva, cargá sus datos más abajo.</p>'+
+  '<label class="fld" for="nbus"><span>¿Ya es alumna? Buscala por nombre o mail</span><input id="nbus" type="search" autocomplete="off" placeholder="Ej: María"></label><div id="nres">'+resultadosAl('')+'</div>'+
+  '<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">'+
+  '<p class="d" style="margin-bottom:8px"><b>O cargala como alumna nueva</b> (se le crea el acceso a Mi aula y te doy su contraseña)</p>'+
   '<label class="fld" for="nn"><span>Nombre y apellido</span><input id="nn" type="text" autocomplete="off"></label>'+
   '<label class="fld" for="nw"><span>WhatsApp</span><input id="nw" type="text" inputmode="tel" placeholder="Ej: 3492 123456" autocomplete="off"></label>'+
   '<label class="fld" for="ne"><span>Mail (es su usuario en Mi aula)</span><input id="ne" type="email" autocomplete="off"></label>'+
-  '<label class="fld" for="nm"><span>Modalidad</span><select id="nm"><option value="vivo">En vivo por Zoom (con grabación)</option><option value="grabacion">Solo grabación</option></select></label>'+
-  '<label class="fld" for="ns"><span>Estado del pago</span><select id="ns"><option value="pendiente">Pendiente</option><option value="pago">Ya pagó</option></select></label>'+
-  '<div style="display:flex;gap:8px"><label class="fld" for="np" style="flex:1"><span>Monto (opcional)</span><input id="np" type="text" inputmode="decimal" placeholder="15000"></label>'+
-  '<label class="fld" for="nc" style="width:110px"><span>Moneda</span><select id="nc"><option value="ARS">ARS</option><option value="USD">USD</option></select></label></div>'+
+  camposPago()+
   '<p class="err" id="nerr" style="margin:0 0 8px"></p>'+
-  '<div class="acts"><button class="btn" type="button" data-a="nuevaok">Anotar alumna</button><button class="btn ghost" type="button" data-a="nuevano">Cancelar</button></div></div>';
+  '<div class="acts"><button class="btn" type="button" data-a="nuevaok">Anotar alumna nueva</button><button class="btn ghost" type="button" data-a="nuevano">Cancelar</button></div></div>';
 }
 function panelInsc(){
   var t0=curT();
@@ -443,7 +479,7 @@ function panelInsc(){
 }
 function render(){
   var t=curT();
-  if(!t){var ac=activosOrd();t=ac[0]||TAL.slice().sort(porNombre)[0];if(t){cur=t.id;if(!activo(t))TAB='espera'}}
+  if(!t){var ac=activosOrd();t=ac[0]||TAL.slice().sort(porNombre)[0];if(t){cur=t.id;TAB='insc'}}
   if(!t){
     $('selT').innerHTML='';$('resu').innerHTML='';$('tabs2').innerHTML='';
     $('pane').innerHTML='<div class="vacio">No hay talleres cargados. Revisá la tabla talleres en Supabase.</div>';
@@ -458,14 +494,14 @@ function render(){
   rows.forEach(function(r){var s=EST.indexOf(r.estado);c[s<0?0:s]++});
   var f=fechaDe(t);
   $('resu').innerHTML='<div class="rt">'+esc(t.nombre)+'</div><div class="rs">'+(String(t.fecha||'').trim()?esc(t.fecha)+' · ':'Sin fecha · ')+rows.length+(rows.length===1?' anotada':' anotadas')+' · '+(c[1]+c[2])+' pagaron · '+c[2]+' entregadas</div>';
-  $('tabs2').innerHTML=tab2('insc','Inscriptas',rows.length,pendPago(t)>0)+tab2('espera','Lista de espera',wl.length,sinAvisar(t)>0)+tab2('ajustes','Ajustes',null,false);
-  $('pane').innerHTML=TAB==='ajustes'?panelAjustes(t):TAB==='espera'?panelEspera(t):panelInsc();
+  $('tabs2').innerHTML=tab2('insc','Inscriptas',rows.length,pendPago(t)>0)+tab2('ajustes','Ajustes',null,false);
+  $('pane').innerHTML=TAB==='ajustes'?panelAjustes(t):panelInsc();
   if(TAB==='insc')pintaInsc();
 }
 document.addEventListener('change',function(e){
   if(e.target.id==='selT'){
     cur=e.target.value;NEW=false;EDIT=null;DEL=null;RESETASK=null;Q='';
-    var t=curT();TAB=(t&&!activo(t))?'espera':'insc';
+    var t=curT();TAB='insc';
     render();window.scrollTo(0,0);
   }
 });
@@ -716,8 +752,8 @@ function setView(v){
   if(v==='mc')renderMc();
   window.scrollTo(0,0);
 }
-var _render=render;render=function(){_render();renderMc()};
-var _cargar=cargar;cargar=function(){return _cargar().then(mcCargar)};
+var _render=render;render=function(){_render();renderMc();pintaNT()};
+/* masterclasses ocultas por ahora: no se consultan */
 function mcGo(v,s){MCV=v;if(s!==undefined)MCS=s;MCDEL=null;renderMc();window.scrollTo(0,0)}
 function patchSlug(slug,d){
   return api('masterclass_clases?slug=eq.'+encodeURIComponent(slug),{method:'PATCH',body:d,rep:true}).then(function(r){if(!r||!r.length)throw new Error('NOSAVE')});
@@ -960,8 +996,26 @@ document.addEventListener('click',function(e){
     }).catch(function(e){b.disabled=false;fallo(e)});
     return;
   }
-  if(a==='nueva'){NEW=true;render();var f=$('nn');if(f)f.focus();return}
-  if(a==='nuevano'){NEW=false;render();return}
+  if(a==='nueva'){NEW=true;NSEL=null;render();var f=$('nn');if(f)f.focus();return}
+  if(a==='nuevano'){NEW=false;NSEL=null;render();return}
+  if(a==='nuevaok'&&t&&NSEL){
+    var er0=$('nerr'),pr0=($('np').value||'').trim().replace(/\./g,'').replace(',','.');
+    if(rowsOf(t).some(function(x){return String(x.user_id)===String(NSEL.user_id)})){er0.textContent='Ya está anotada en este taller.';return}
+    if(pr0!==''&&isNaN(Number(pr0))){er0.textContent='El monto tiene que ser un número.';return}
+    var d0={taller:t.nombre,nombre:NSEL.nombre,email:NSEL.email,whatsapp:NSEL.whatsapp,user_id:NSEL.user_id,modalidad:$('nm').value,estado:$('ns').value};
+    if(pr0!==''){d0.precio=Number(pr0);d0.moneda=$('nc').value}
+    b.disabled=true;b.textContent='Anotando…';er0.textContent='';
+    api('inscripciones',{method:'POST',body:d0,rep:true}).then(function(r){
+      var nid=r&&r[0]&&r[0].id;if(nid==null)throw new Error('NOINS');
+      OPENI[nid]=true;NEW=false;NSEL=null;Q='';
+      return cargar().then(function(){render();toast('Anotada en el taller')});
+    }).catch(function(x){
+      if(x&&x.message==='AUTH'){fallo(x);return}
+      b.disabled=false;b.textContent='Anotar alumna';
+      er0.textContent='No se pudo anotar. '+(x&&x.message&&x.message.length<120?x.message:'Probá de nuevo.');
+    });
+    return;
+  }
   if(a==='nuevaok'&&t){
     var nm=($('nn').value||'').trim(),nw=($('nw').value||'').trim(),ne=($('ne').value||'').trim().toLowerCase(),er=$('nerr');
     if(!nm||!nw||!ne){er.textContent='Completá nombre, WhatsApp y mail.';return}
@@ -1036,6 +1090,47 @@ document.addEventListener('click',function(e){
     var inc=INS.filter(function(x){return String(x.id)===String(id)})[0];
     if(a==='clavewa'){window.open('https://wa.me/'+waNum(inc?inc.whatsapp:'')+'?text='+encodeURIComponent(msgClave(q)),'_blank');return}
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(msgClave(q)).then(function(){toast('Mensaje copiado')},function(){toast('No se pudo copiar')});else toast('No se pudo copiar');
+    return;
+  }
+});
+
+
+/* ---------- Nuevo taller (lo creás vos, sobre la marcha) ---------- */
+var NT=false;
+function pintaNT(){
+  var el=$('ntBox');if(!el)return;
+  if(!NT){el.innerHTML='<button class="btn ghost" type="button" data-a="ntnew">+ Nuevo taller</button>';return}
+  el.innerHTML='<div class="box nueva"><h2>Nuevo taller</h2><p class="d">Lo creás acá y ya podés anotar alumnas, cargar el Zoom y el material.</p>'+
+    '<label class="fld" for="ntn"><span>Nombre del taller</span><input id="ntn" type="text" autocomplete="off" placeholder="Ej: Masaje descontracturante"></label>'+
+    '<label class="fld" for="ntf"><span>Fecha (opcional)</span><input id="ntf" type="text" autocomplete="off" placeholder="Ej: sábado 12/12 a las 14 hs"></label>'+
+    '<p class="note">Poné la fecha con el formato día/mes (12/12) para que el panel y el aula la ordenen. Si todavía no la sabés, dejala vacía y la cargás después en Ajustes.</p>'+
+    '<p class="note"><b>Ojo:</b> para que aparezca en la página de talleres, el nombre tiene que ser exactamente igual al que pongas en el index.html.</p>'+
+    '<p class="err" id="nterr" style="margin:0 0 8px"></p>'+
+    '<div class="acts"><button class="btn" type="button" data-a="ntok">Crear taller</button><button class="btn ghost" type="button" data-a="ntno">Cancelar</button></div></div>';
+}
+document.addEventListener('input',function(e){if(e.target.id==='nbus'){var r=$('nres');if(r)r.innerHTML=resultadosAl(e.target.value)}});
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b||!b.dataset.a)return;
+  var a=b.dataset.a;
+  if(a==='nsel'){NSEL=alumnas().filter(function(x){return x.key===b.dataset.id})[0]||null;render();return}
+  if(a==='nselno'){NSEL=null;render();return}
+  if(a==='ntnew'){NT=true;pintaNT();var f=$('ntn');if(f)f.focus();return}
+  if(a==='ntno'){NT=false;pintaNT();return}
+  if(a==='ntok'){
+    var nom=($('ntn').value||'').trim().replace(/\s+/g,' '),fe=($('ntf').value||'').trim(),er=$('nterr');
+    if(nom.length<3){er.textContent='Escribí el nombre del taller.';return}
+    if(TAL.some(function(x){return norm(x.nombre)===norm(nom)})){er.textContent='Ya existe un taller con ese nombre.';return}
+    var d={nombre:nom};if(fe)d.fecha=fe;
+    b.disabled=true;b.textContent='Creando…';er.textContent='';
+    api('talleres',{method:'POST',body:[d],rep:true}).then(function(r){
+      var t=r&&r[0];if(!t)throw new Error('NOINS');
+      TAL.push(t);cur=t.id;TAB='ajustes';NT=false;NEW=false;EDIT=null;DEL=null;Q='';
+      render();window.scrollTo(0,0);toast('Taller creado');
+    }).catch(function(x){
+      if(x&&x.message==='AUTH'){fallo(x);return}
+      b.disabled=false;b.textContent='Crear taller';
+      er.textContent=(x&&x.message==='HTTP 403')?'Supabase no me deja crear talleres todavía: falta darle el permiso (te paso el SQL).':'No se pudo crear el taller. Probá de nuevo.';
+    });
     return;
   }
 });
