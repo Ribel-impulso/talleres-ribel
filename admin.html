@@ -186,7 +186,7 @@ input[type=date]{width:100%;font:.95rem var(--body);padding:11px 12px;border-rad
     </form>
   </div>
   <div id="app" hidden>
-    <div class="seg" id="seg" hidden><button type="button" data-a="view" data-v="tal" aria-pressed="true">Talleres</button><button type="button" data-a="view" data-v="mc" aria-pressed="false">Masterclasses</button></div>
+    <div class="seg" id="seg"><button type="button" data-a="view" data-v="tal" aria-pressed="true">Talleres</button><button type="button" data-a="view" data-v="aca" aria-pressed="false">Academia</button></div>
     <div id="vTal">
     <div class="pick"><label for="selT">Taller</label><select id="selT"></select></div>
     <div id="ntBox" style="margin:10px 0 0"></div>
@@ -194,7 +194,7 @@ input[type=date]{width:100%;font:.95rem var(--body);padding:11px 12px;border-rad
     <div class="tabs2" id="tabs2" role="tablist"></div>
     <div id="pane"></div>
     </div>
-    <div id="vMc" hidden></div>
+    <div id="vAca" hidden></div>
   </div>
 </div>
 <div id="toast" role="status" hidden></div>
@@ -745,15 +745,15 @@ function renderMc(){
   el.innerHTML=MCV==='anot'?mcAnotView():MCV==='form'?mcForm():mcLista();
 }
 function setView(v){
-  VIEW=v;$('vTal').hidden=v!=='tal';$('vMc').hidden=v!=='mc';
+  VIEW=v;$('vTal').hidden=v!=='tal';$('vAca').hidden=v!=='aca';
   document.querySelector('[data-v="tal"]').setAttribute('aria-pressed',v==='tal');
-  document.querySelector('[data-v="mc"]').setAttribute('aria-pressed',v==='mc');
-  $('ttl').textContent=v==='tal'?'Panel de talleres':'Panel de masterclasses';
-  if(v==='mc')renderMc();
+  document.querySelector('[data-v="aca"]').setAttribute('aria-pressed',v==='aca');
+  $('ttl').textContent=v==='tal'?'Panel de talleres':'Panel de la academia';
+  if(v==='aca')renderAca();
   window.scrollTo(0,0);
 }
-var _render=render;render=function(){_render();renderMc();pintaNT()};
-/* masterclasses ocultas por ahora: no se consultan */
+var _render=render;render=function(){_render();renderMc();pintaNT();if(VIEW==='aca')renderAca()};
+var _cargar=cargar;cargar=function(){return _cargar().then(acaCargar)};
 function mcGo(v,s){MCV=v;if(s!==undefined)MCS=s;MCDEL=null;renderMc();window.scrollTo(0,0)}
 function patchSlug(slug,d){
   return api('masterclass_clases?slug=eq.'+encodeURIComponent(slug),{method:'PATCH',body:d,rep:true}).then(function(r){if(!r||!r.length)throw new Error('NOSAVE')});
@@ -1131,6 +1131,238 @@ document.addEventListener('click',function(e){
       b.disabled=false;b.textContent='Crear taller';
       er.textContent=(x&&x.message==='HTTP 403')?'Supabase no me deja crear talleres todavía: falta darle el permiso (te paso el SQL).':'No se pudo crear el taller. Probá de nuevo.';
     });
+    return;
+  }
+});
+
+/* ---------- Academia: módulos, clases y accesos (todo a mano) ---------- */
+var ACM=[],ACL=[],ACS=[],AERR=false,AV='lista',AT='cont',AEM=null,AEC=null,APDF=null,APDFNEW=false,ADEL=null,OPENM={};
+function aOrd(a,b){return (a.orden-b.orden)||(a.id-b.id)}
+function clasesDe(m){return ACL.filter(function(c){return String(c.modulo_id)===String(m.id)}).sort(aOrd)}
+function acaCargar(){
+  return Promise.all([
+    api('academia_modulos?select=*&order=orden.asc,id.asc'),
+    api('academia_clases?select=*&order=orden.asc,id.asc'),
+    api('academia_accesos?select=*&order=creado_en.desc')
+  ]).then(function(r){ACM=r[0]||[];ACL=r[1]||[];ACS=r[2]||[];AERR=false})
+    .catch(function(e){if(e&&e.message==='AUTH')throw e;AERR=true;ACM=[];ACL=[];ACS=[]});
+}
+function aTabs(){
+  return '<div class="prox" style="margin-bottom:14px">'+[['cont','Módulos y clases'],['acc','Quiénes tienen la Academia ('+ACS.length+')']].map(function(x){
+    return '<button class="pchip" type="button" data-a="ac_tab" data-id="'+x[0]+'" aria-pressed="'+(AT===x[0])+'">'+x[1]+'</button>'}).join('')+'</div>';
+}
+function aMod(m,i){
+  var cl=clasesDe(m),pub=cl.filter(function(c){return c.publicada}).length;
+  var del=(ADEL==='m'+m.id)?
+    '<div class="ask danger">¿Eliminar el módulo <b>'+esc(m.titulo)+'</b> y sus '+cl.length+' clases? No se puede deshacer.<div class="acts"><button class="btn warn" type="button" data-a="ac_moddelok" data-id="'+m.id+'">Sí, eliminar</button><button class="btn ghost" type="button" data-a="ac_cancel">No, dejar</button></div></div>':
+    '<button class="back danger" type="button" data-a="ac_moddel" data-id="'+m.id+'">Eliminar módulo</button>';
+  var h='<details class="box" data-m="'+m.id+'"'+(OPENM[m.id]?' open':'')+'><summary><span>'+esc((i+1)+'. '+m.titulo)+' <small style="font-weight:500;color:var(--muted)">· '+pub+' de '+cl.length+' clases publicadas'+(m.publicado?'':' · OCULTO')+'</small></span></summary>';
+  if(m.descripcion)h+='<p class="d">'+esc(m.descripcion)+'</p>';
+  h+='<div class="mini" style="margin:0 0 10px"><button class="back" type="button" data-a="ac_modedit" data-id="'+m.id+'">Editar módulo</button>'+
+    '<button class="back" type="button" data-a="ac_modup" data-id="'+m.id+'">↑ Subir</button><button class="back" type="button" data-a="ac_moddn" data-id="'+m.id+'">↓ Bajar</button>'+
+    '<button class="back" type="button" data-a="ac_modpub" data-id="'+m.id+'">'+(m.publicado?'Ocultar':'Mostrar')+'</button></div>';
+  h+=cl.length?cl.map(function(c){
+    return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(c.titulo)+'</b><small>'+(c.video_url?'Video ✓':'Sin video')+' · '+(c.material_url?'PDF ✓':'Sin PDF')+'</small></div><span class="pill p'+(c.publicada?2:0)+'">'+(c.publicada?'Publicada':'Borrador')+'</span></div>'+
+      '<div class="mini"><button class="back" type="button" data-a="ac_clsedit" data-id="'+c.id+'">Editar</button><button class="back" type="button" data-a="ac_clsup" data-id="'+c.id+'">↑ Subir</button><button class="back" type="button" data-a="ac_clsdn" data-id="'+c.id+'">↓ Bajar</button></div></div>';
+  }).join(''):'<p class="note">Todavía no hay clases en este módulo.</p>';
+  h+='<div style="margin-top:10px"><button class="btn ghost" type="button" data-a="ac_clsnew" data-id="'+m.id+'">+ Nueva clase</button></div><div style="margin-top:12px">'+del+'</div></details>';
+  return h;
+}
+function aLista(){
+  var h=aTabs();
+  if(AT==='acc')return h+aAccesos();
+  h+='<div class="mchd"><div><h2 class="mct">Módulos y clases</h2><p class="sub" style="margin:2px 0 0">Las clases en borrador no las ve nadie. Las publicadas aparecen en Mi aula: con candado para quien no compró y con el video y el PDF para quien tiene acceso.</p></div><button class="btn" type="button" data-a="ac_modnew">+ Módulo</button></div>';
+  var mods=ACM.slice().sort(aOrd);
+  h+=mods.length?mods.map(aMod).join(''):'<div class="box"><p class="d" style="margin:0">Todavía no hay módulos. Creá el primero con "+ Módulo".</p></div>';
+  return h;
+}
+function aModForm(){
+  var m=AEM==='new'?{}:ACM.filter(function(x){return String(x.id)===String(AEM)})[0]||{};
+  return '<button class="back" type="button" data-a="ac_back" style="padding-left:0">‹ Academia</button><h2 class="mct" style="margin:4px 0 12px">'+(AEM==='new'?'Nuevo módulo':'Editar módulo')+'</h2><div class="box">'+
+    '<label class="fld" for="amt"><span>Título del módulo</span><input id="amt" type="text" value="'+esc(m.titulo)+'" placeholder="Ej: Tus números"></label>'+
+    '<label class="fld" for="amd"><span>Descripción corta</span><textarea id="amd" rows="3" placeholder="De qué trata este módulo">'+esc(m.descripcion)+'</textarea></label>'+
+    '<p class="err" id="aerr"></p><div class="acts"><button class="btn" type="button" data-a="ac_modsave">Guardar módulo</button><button class="btn ghost" type="button" data-a="ac_back">Cancelar</button></div></div>';
+}
+function aClsForm(){
+  var c=AEC.id?ACL.filter(function(x){return String(x.id)===String(AEC.id)})[0]||{}:{};
+  var m=ACM.filter(function(x){return String(x.id)===String(AEC.modulo_id)})[0]||{};
+  var del=AEC.id?((ADEL==='c'+AEC.id)?
+    '<div class="ask danger">¿Eliminar esta clase? No se puede deshacer.<div class="acts"><button class="btn warn" type="button" data-a="ac_clsdelok">Sí, eliminar</button><button class="btn ghost" type="button" data-a="ac_cancel">No, dejar</button></div></div>':
+    '<div class="mini"><button class="back danger" type="button" data-a="ac_clsdel">Eliminar clase</button></div>'):'';
+  return '<button class="back" type="button" data-a="ac_back" style="padding-left:0">‹ Academia</button><h2 class="mct" style="margin:4px 0 2px">'+(AEC.id?'Editar clase':'Nueva clase')+'</h2><p class="sub">Módulo: '+esc(m.titulo)+'</p><div class="box">'+
+    '<label class="fld" for="act1"><span>Título de la clase</span><input id="act1" type="text" value="'+esc(c.titulo)+'" placeholder="Ej: Cómo calcular el costo de un servicio"></label>'+
+    '<label class="fld" for="acd1"><span>Descripción (opcional)</span><textarea id="acd1" rows="3">'+esc(c.descripcion)+'</textarea></label>'+
+    '<label class="fld" for="acv1"><span>Link del video (YouTube no listado)</span><input id="acv1" type="text" value="'+esc(c.video_url)+'" placeholder="https://youtu.be/…"></label>'+
+    '<div class="fld"><span>Material en PDF (opcional)</span><div id="acpdfok">'+aPdfHtml()+'</div>'+
+    '<label class="fld" for="acpdf" style="margin:0"><span style="font-weight:500;color:var(--muted)">'+(APDF?'Reemplazar por otro PDF:':'Elegí el archivo PDF:')+'</span><input id="acpdf" type="file" accept="application/pdf"></label><p class="note" id="acpdfst" style="margin:4px 0 0"></p></div>'+
+    '<label class="fld" style="display:flex;gap:8px;align-items:center"><input id="acpub" type="checkbox"'+(c.publicada?' checked':'')+'> <span style="margin:0">Publicada (si no, queda en borrador y nadie la ve)</span></label>'+
+    '<p class="err" id="aerr"></p><div class="acts"><button class="btn" type="button" data-a="ac_clssave">Guardar clase</button><button class="btn ghost" type="button" data-a="ac_back">Cancelar</button></div>'+del+'</div>';
+}
+function aPdfHtml(){
+  return APDF?'<div class="pdfok"><b>✓ PDF cargado</b><a href="'+esc(APDF)+'" target="_blank" rel="noopener" style="color:var(--accent2);font-weight:700">Ver</a><button class="back" type="button" data-a="ac_pdfquitar" style="padding:0">Quitar</button></div>':'<p class="note" style="margin:0 0 4px">Todavía no cargaste el PDF.</p>';
+}
+function aResultados(q){
+  var n=norm(q).trim();
+  if(!n)return '<p class="note" style="margin:6px 0 0">Escribí su nombre o mail para buscarla.</p>';
+  var ya=ACS.map(function(a){return String(a.user_id)});
+  var l=alumnas().filter(function(a){return norm(a.nombre+' '+a.email).indexOf(n)>=0}).slice(0,8);
+  if(!l.length)return '<p class="note" style="margin:6px 0 0">No encontré a nadie con ese nombre. Tiene que estar anotada en algún taller (con cuenta en Mi aula).</p>';
+  return l.map(function(a){
+    var ok=ya.indexOf(String(a.user_id))<0;
+    return '<button class="btn ghost" type="button" style="width:100%;text-align:left;margin-top:6px"'+(ok?' data-a="ac_grant" data-id="'+esc(a.key)+'"':' disabled')+'><b>'+esc(a.nombre)+'</b><br><small>'+esc(a.email)+(ok?'':' · ya tiene la Academia')+'</small></button>';
+  }).join('');
+}
+function aAccesos(){
+  var h='<div class="box"><h2>Dar acceso a la Academia</h2><p class="d">Buscala por nombre o mail y tocá su nombre. Desde ese momento ve los videos y el material.</p>'+
+    '<label class="fld" for="acbus" style="margin:0"><span style="position:absolute;left:-9999px">Buscar</span><input id="acbus" type="search" placeholder="Ej: María" autocomplete="off"></label><div id="acres">'+aResultados('')+'</div></div>';
+  h+='<div class="lbl">Con acceso ('+ACS.length+')</div>';
+  h+=ACS.length?ACS.map(function(a){
+    var d=new Date(a.creado_en),f=isNaN(d)?'':d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+    var q=(ADEL==='a'+a.id)?
+      '<div class="ask danger">¿Quitarle la Academia a <b>'+esc(a.nombre)+'</b>?<div class="acts"><button class="btn warn" type="button" data-a="ac_revok" data-id="'+a.id+'">Sí, quitar</button><button class="btn ghost" type="button" data-a="ac_cancel">No</button></div></div>':
+      '<div class="mini"><button class="back danger" type="button" data-a="ac_rev" data-id="'+a.id+'">Quitar acceso</button></div>';
+    return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(a.nombre)+'</b><small>'+esc(a.email)+(f?' · desde '+f:'')+'</small></div><span class="pill p2">Con acceso</span></div>'+q+'</div>';
+  }).join(''):'<div class="box"><p class="d" style="margin:0">Todavía nadie tiene acceso.</p></div>';
+  return h;
+}
+function renderAca(){
+  var el=$('vAca');if(!el)return;
+  if(AERR){el.innerHTML='<div class="box"><h2>No se pudo cargar la Academia</h2><p class="d">Revisá tu conexión y probá de nuevo. Si recién creaste las tablas en Supabase, tocá "Actualizar".</p><button class="btn" type="button" data-a="act">Reintentar</button></div>';return}
+  el.innerHTML=AV==='mod'?aModForm():AV==='cls'?aClsForm():aLista();
+}
+function aGo(v){AV=v;ADEL=null;renderAca();window.scrollTo(0,0)}
+function aMover(tabla,lista,id,dir){
+  var l=lista.slice().sort(aOrd),i=-1;
+  l.forEach(function(x,k){if(String(x.id)===String(id))i=k});
+  var j=i+dir;if(i<0||j<0||j>=l.length)return Promise.resolve();
+  var t=l[i];l[i]=l[j];l[j]=t;
+  var ps=[];
+  l.forEach(function(x,k){if(x.orden!==k+1)ps.push(patch(tabla,x.id,{orden:k+1}).then(function(){x.orden=k+1}))});
+  return Promise.all(ps);
+}
+function aMax(l){return l.reduce(function(n,x){return Math.max(n,x.orden||0)},0)}
+function subirPdfAca(file){
+  var st=$('acpdfst');if(!st)return;
+  if(file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name)){st.textContent='El archivo tiene que ser un PDF.';return}
+  if(file.size>50*1024*1024){st.textContent='El PDF pesa más de 50 MB.';return}
+  st.textContent='Subiendo '+file.name+'…';
+  var nombre='academia-'+Math.random().toString(36).slice(2,10)+Date.now().toString(36)+'.pdf',viejoNuevo=APDFNEW?APDF:null;
+  token().then(function(tk){
+    return fetch(SB_URL+'/storage/v1/object/materiales/'+nombre,{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tk,'Content-Type':'application/pdf','x-upsert':'true'},body:file});
+  }).then(function(r){
+    if(r.status===401)throw new Error('AUTH');
+    if(!r.ok)return r.text().then(function(tx){var er=new Error('SUBIDA');er.det=r.status+': '+String(tx).slice(0,140);throw er});
+    if(viejoNuevo)borrarPdf(viejoNuevo);
+    APDF=SB_URL+'/storage/v1/object/public/materiales/'+nombre;APDFNEW=true;
+    var ok=$('acpdfok');if(ok)ok.innerHTML=aPdfHtml();
+    var s2=$('acpdfst');if(s2)s2.textContent='PDF subido. Acordate de tocar "Guardar clase".';
+  }).catch(function(e){
+    if(e&&e.message==='SUBIDA'){var s3=$('acpdfst');if(s3)s3.textContent='No se pudo subir ('+(e.det||'sin detalle')+').';return}
+    fallo(e);
+  });
+}
+function aSalirForm(){
+  if(APDFNEW&&APDF){var c=AEC&&AEC.id?ACL.filter(function(x){return String(x.id)===String(AEC.id)})[0]:null;if(!c||c.material_url!==APDF)borrarPdf(APDF)}
+  APDF=null;APDFNEW=false;AEM=null;AEC=null;
+}
+document.addEventListener('toggle',function(e){var d=e.target;if(d&&d.dataset&&d.dataset.m)OPENM[d.dataset.m]=d.open},true);
+document.addEventListener('input',function(e){if(e.target.id==='acbus'){var r=$('acres');if(r)r.innerHTML=aResultados(e.target.value)}});
+document.addEventListener('change',function(e){if(e.target.id==='acpdf'&&e.target.files&&e.target.files[0])subirPdfAca(e.target.files[0])});
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b||!b.dataset.a||b.dataset.a.indexOf('ac_')!==0)return;
+  var a=b.dataset.a,id=b.dataset.id,er=$('aerr');
+  function mod(x){return ACM.filter(function(m){return String(m.id)===String(x)})[0]}
+  function cls(x){return ACL.filter(function(c){return String(c.id)===String(x)})[0]}
+  if(a==='ac_tab'){AT=id;ADEL=null;renderAca();return}
+  if(a==='ac_cancel'){ADEL=null;renderAca();return}
+  if(a==='ac_back'){aSalirForm();aGo('lista');return}
+  if(a==='ac_modnew'){AEM='new';aGo('mod');return}
+  if(a==='ac_modedit'){AEM=id;aGo('mod');return}
+  if(a==='ac_modsave'){
+    var tit=($('amt').value||'').trim(),des=($('amd').value||'').trim();
+    if(!tit){er.textContent='Escribí el título del módulo.';return}
+    b.disabled=true;
+    var p;
+    if(AEM==='new'){
+      p=api('academia_modulos',{method:'POST',body:[{titulo:tit,descripcion:des||null,orden:aMax(ACM)+1,publicado:true}],rep:true}).then(function(r){if(!r||!r[0])throw new Error('NOINS');ACM.push(r[0]);OPENM[r[0].id]=true});
+    }else{
+      var m=mod(AEM);p=patch('academia_modulos',AEM,{titulo:tit,descripcion:des||null}).then(function(){m.titulo=tit;m.descripcion=des||null});
+    }
+    p.then(function(){AEM=null;aGo('lista');toast('Módulo guardado')}).catch(function(x){b.disabled=false;fallo(x)});
+    return;
+  }
+  if(a==='ac_modpub'){
+    var m2=mod(id);if(!m2)return;
+    patch('academia_modulos',id,{publicado:!m2.publicado}).then(function(){m2.publicado=!m2.publicado;renderAca();toast(m2.publicado?'Módulo visible':'Módulo oculto')}).catch(fallo);
+    return;
+  }
+  if(a==='ac_modup'||a==='ac_moddn'){aMover('academia_modulos',ACM,id,a==='ac_modup'?-1:1).then(renderAca).catch(fallo);return}
+  if(a==='ac_moddel'){ADEL='m'+id;renderAca();return}
+  if(a==='ac_moddelok'){
+    var urls=clasesDe({id:id}).map(function(c){return c.material_url}).filter(Boolean);
+    api('academia_modulos?id=eq.'+encodeURIComponent(id),{method:'DELETE',rep:true}).then(function(r){
+      if(!r||!r.length)throw new Error('NODEL');
+      ACM=ACM.filter(function(x){return String(x.id)!==String(id)});ACL=ACL.filter(function(c){return String(c.modulo_id)!==String(id)});
+      urls.forEach(borrarPdf);ADEL=null;renderAca();toast('Módulo eliminado');
+    }).catch(function(x){if(x&&x.message==='NODEL'){ADEL=null;renderAca();toast('No se pudo eliminar')}else fallo(x)});
+    return;
+  }
+  if(a==='ac_clsnew'){AEC={id:null,modulo_id:id};APDF=null;APDFNEW=false;aGo('cls');return}
+  if(a==='ac_clsedit'){var c0=cls(id);if(!c0)return;AEC={id:c0.id,modulo_id:c0.modulo_id};APDF=c0.material_url||null;APDFNEW=false;aGo('cls');return}
+  if(a==='ac_clsup'||a==='ac_clsdn'){
+    var c1=cls(id);if(!c1)return;
+    aMover('academia_clases',clasesDe({id:c1.modulo_id}),id,a==='ac_clsup'?-1:1).then(renderAca).catch(fallo);
+    return;
+  }
+  if(a==='ac_pdfquitar'){
+    if(APDFNEW&&APDF)borrarPdf(APDF);
+    APDF=null;APDFNEW=false;var ok=$('acpdfok');if(ok)ok.innerHTML=aPdfHtml();return;
+  }
+  if(a==='ac_clssave'){
+    var t1=($('act1').value||'').trim(),d1=($('acd1').value||'').trim(),v1=($('acv1').value||'').trim();
+    if(!t1){er.textContent='Escribí el título de la clase.';return}
+    if(v1&&!/^https:\/\//i.test(v1)){er.textContent='El link del video tiene que empezar con https://';return}
+    var dat={titulo:t1,descripcion:d1||null,video_url:v1||null,material_url:APDF||null,publicada:$('acpub').checked};
+    b.disabled=true;
+    var p2,viejo=null;
+    if(AEC.id){
+      var c2=cls(AEC.id);viejo=c2&&c2.material_url&&c2.material_url!==APDF?c2.material_url:null;
+      p2=patch('academia_clases',AEC.id,dat).then(function(){for(var f in dat)c2[f]=dat[f]});
+    }else{
+      dat.modulo_id=AEC.modulo_id;dat.orden=aMax(clasesDe({id:AEC.modulo_id}))+1;
+      p2=api('academia_clases',{method:'POST',body:[dat],rep:true}).then(function(r){if(!r||!r[0])throw new Error('NOINS');ACL.push(r[0])});
+    }
+    p2.then(function(){if(viejo)borrarPdf(viejo);OPENM[AEC.modulo_id]=true;APDFNEW=false;aSalirForm();aGo('lista');toast('Clase guardada')}).catch(function(x){b.disabled=false;fallo(x)});
+    return;
+  }
+  if(a==='ac_clsdel'){ADEL='c'+AEC.id;renderAca();return}
+  if(a==='ac_clsdelok'){
+    var c3=cls(AEC.id),u3=c3&&c3.material_url;
+    api('academia_clases?id=eq.'+encodeURIComponent(AEC.id),{method:'DELETE',rep:true}).then(function(r){
+      if(!r||!r.length)throw new Error('NODEL');
+      ACL=ACL.filter(function(c){return String(c.id)!==String(AEC.id)});if(u3)borrarPdf(u3);
+      APDFNEW=false;aSalirForm();aGo('lista');toast('Clase eliminada');
+    }).catch(function(x){if(x&&x.message==='NODEL'){ADEL=null;renderAca();toast('No se pudo eliminar')}else fallo(x)});
+    return;
+  }
+  if(a==='ac_grant'){
+    var al=alumnas().filter(function(x){return x.key===id})[0];if(!al)return;
+    b.disabled=true;
+    api('academia_accesos',{method:'POST',body:[{user_id:al.user_id,nombre:al.nombre,email:al.email}],rep:true}).then(function(r){
+      if(!r||!r[0])throw new Error('NOINS');ACS.unshift(r[0]);renderAca();toast('Academia habilitada para '+al.nombre);
+    }).catch(function(x){
+      b.disabled=false;
+      if(x&&x.message==='HTTP 409'){toast('Ya tenía la Academia');return}
+      fallo(x);
+    });
+    return;
+  }
+  if(a==='ac_rev'){ADEL='a'+id;renderAca();return}
+  if(a==='ac_revok'){
+    api('academia_accesos?id=eq.'+encodeURIComponent(id),{method:'DELETE',rep:true}).then(function(r){
+      if(!r||!r.length)throw new Error('NODEL');
+      ACS=ACS.filter(function(x){return String(x.id)!==String(id)});ADEL=null;renderAca();toast('Acceso quitado');
+    }).catch(function(x){if(x&&x.message==='NODEL'){ADEL=null;renderAca();toast('No se pudo quitar')}else fallo(x)});
     return;
   }
 });
