@@ -87,6 +87,24 @@ details.card[open] .tog::after{content:"Ocultar detalles"}
 .more{margin-top:8px}
 .more a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;border-radius:10px;border:1.5px solid var(--line);color:var(--text);font-weight:600;font-size:14px;text-decoration:none}
 .more a:hover{border-color:var(--accent)}
+/* academia */
+.banner{background:var(--navy);color:#fff;border-radius:20px;padding:22px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.banner b{font-size:18px}
+.banner p{margin:4px 0 0;font-size:14px;color:rgba(255,255,255,.65)}
+.banner .pr{color:#c7d2fe;font-weight:700}
+.banner .btn{width:auto;min-height:44px;font-size:14px}
+.banner.ok{background:var(--soft);color:var(--text)}
+.banner.ok p{color:var(--muted)}
+.cls{border-top:1px solid var(--line);padding:12px 0;display:flex;flex-direction:column;gap:8px}
+.cls:first-child{border-top:0;padding-top:0}
+.cl-h{display:flex;gap:10px;align-items:flex-start}
+.cl-h .ic{flex:none;width:30px;height:30px;border-radius:8px;background:var(--soft);color:var(--accent2);display:flex;align-items:center;justify-content:center;font:800 13px var(--font)}
+.cl-h .ic svg{width:16px;height:16px}
+.cl-h b{font-size:15px;line-height:1.3}
+.cl-h small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.cls.lk .cl-h b{color:var(--muted)}
+.cls.lk .ic{background:var(--cream);color:var(--muted)}
+.cls .acts{margin-left:40px}
 [hidden]{display:none!important}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 @media(max-width:600px){.nav{padding:12px 16px}.w{padding-top:24px}.acts{grid-template-columns:1fr 1fr}}
@@ -235,6 +253,58 @@ function orden(a,b){
 }
 function norm(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}
 var TAB='talleres';
+/* ---------- Academia ---------- */
+var ACA=null,ACAERR=false;
+function miAcademia(){
+  return token().then(function(tk){
+    return fetch(SB_URL+'/rest/v1/rpc/mi_academia',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+tk,'Content-Type':'application/json'},body:'{}'});
+  }).then(function(r){
+    if(r.status===401)throw new Error('AUTH');
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return r.json();
+  });
+}
+function cargarAcademia(){
+  return miAcademia().then(function(d){ACA=d&&typeof d==='object'?d:null;ACAERR=!ACA;pintar()}).catch(function(e){
+    if(e&&e.message==='AUTH'){clearSes();showLogin('La sesión venció. Entrá de nuevo.');return}
+    ACA=null;ACAERR=true;pintar();
+  });
+}
+function claseHtml(c,i,acceso){
+  var h='<div class="cls'+(acceso?'':' lk')+'"><div class="cl-h"><div class="ic">'+(acceso?(i+1):IC.lock)+'</div><div><b>'+esc(c.titulo)+'</b>'+(c.descripcion?'<small>'+esc(c.descripcion)+'</small>':'')+'</div></div>';
+  if(acceso){
+    var v=url(c.video_url),m=url(c.material_url);
+    h+='<div class="acts">'+
+      (v?'<a class="act main" target="_blank" rel="noopener" href="'+esc(v)+'">'+IC.play+'<span>Ver clase</span></a>':'<div class="act off">'+IC.play+'<span>Video próximamente</span></div>')+
+      (m?'<a class="act" target="_blank" rel="noopener" href="'+esc(m)+'">'+IC.pdf+'<span>Material (PDF)</span></a>':'')+'</div>';
+  }
+  return h+'</div>';
+}
+function academiaHtml(q){
+  if(ACAERR)return '<div class="empty">No pudimos cargar la Academia. Revisá tu conexión y <a href="#" id="reintA" style="color:var(--accent2);font-weight:700">probá de nuevo</a>.</div>';
+  if(!ACA)return '<div class="empty">Cargando la Academia…</div>';
+  var acceso=!!ACA.acceso,mods=Array.isArray(ACA.modulos)?ACA.modulos:[];
+  if(!mods.length)return '<div class="empty">Muy pronto vas a ver acá la <b>Academia Ribel</b>: módulos, clases y material para estudiar a tu ritmo.</div>';
+  var h='';
+  if(!q){
+    h+=acceso?
+      '<div class="banner ok"><div><b>Tenés acceso a la Academia</b><p>Entrá a cada módulo para ver los videos y descargar el material.</p></div></div>':
+      '<div class="banner"><div><b>Academia Ribel</b><p>Mirá todo lo que incluye. Con tu acceso ves los videos y descargás el material de cada clase.</p><p class="pr">Pago único · $25.000 · USD 23</p></div>'+
+      '<a class="btn" target="_blank" rel="noopener" href="'+esc(waLink('Hola! Soy '+NOMBRE+'. Quiero info de la Academia Ribel'))+'">Quiero la Academia</a></div>';
+  }
+  var cuerpo=mods.map(function(m,mi){
+    var cl=Array.isArray(m.clases)?m.clases:[];
+    var todas=!q||norm(m.titulo).indexOf(q)>=0;
+    var vis=todas?cl:cl.filter(function(c){return norm(c.titulo+' '+(c.descripcion||'')).indexOf(q)>=0});
+    if(q&&!todas&&!vis.length)return '';
+    return '<details class="card"'+(q?' open':'')+'><summary><div class="tbox"><div class="ct">'+(mi+1)+'. '+esc(m.titulo)+'</div>'+
+      (m.descripcion?'<div style="margin-top:6px;font-size:14px;color:rgba(255,255,255,.65)">'+esc(m.descripcion)+'</div>':'')+
+      '<div class="fecha">'+IC.play+'<span>'+cl.length+(cl.length===1?' clase':' clases')+'</span></div></div><span class="tog"></span></summary>'+
+      '<div class="body">'+(vis.length?vis.map(function(c,i){return claseHtml(c,i,acceso)}).join(''):'<p class="note">Próximamente.</p>')+'</div></details>';
+  }).join('');
+  if(q&&!cuerpo)return '<div class="empty">No encontramos nada en la Academia con “'+esc($('q').value.trim())+'”.</div>';
+  return h+'<div class="grid">'+cuerpo+'</div>';
+}
 function pintar(){
   $('hola').textContent='Hola'+(NOMBRE?', '+NOMBRE.split(' ')[0]:'');
   $('tTal').setAttribute('aria-selected',String(TAB==='talleres'));
@@ -242,10 +312,7 @@ function pintar(){
   var q=norm($('q').value.trim());
   $('q').placeholder=TAB==='talleres'?'Buscar tu taller…':'Buscar tu módulo o clase…';
   var h='';
-  if(TAB==='academia'){
-    h='<div class="empty">Muy pronto vas a ver acá tu <b>Academia El Club del Masaje</b>: módulos, clases y material para estudiar a tu ritmo.</div>';
-    $('cont').innerHTML=h;return;
-  }
+  if(TAB==='academia'){$('cont').innerHTML=academiaHtml(q);return}
   var prox=[],pas=[];
   ROWS.forEach(function(r,i){
     if(q&&norm(r.taller).indexOf(q)<0)return;
@@ -262,7 +329,7 @@ function pintar(){
 }
 function cargar(){
   $('cont').innerHTML='<div class="empty">Cargando tu aula…</div>';
-  return miAula().then(function(d){ROWS=Array.isArray(d)?d:[];pintar()}).catch(function(e){
+  return miAula().then(function(d){ROWS=Array.isArray(d)?d:[];pintar();cargarAcademia()}).catch(function(e){
     if(e&&e.message==='AUTH'){clearSes();showLogin('La sesión venció. Entrá de nuevo.');return}
     $('cont').innerHTML='<div class="empty">No pudimos cargar tu aula. Revisá tu conexión y <a href="#" id="reint" style="color:var(--accent2);font-weight:700">probá de nuevo</a>.</div>';
   });
@@ -346,11 +413,12 @@ $('fLogin').addEventListener('submit',function(e){
 $('q').addEventListener('input',function(){if(ROWS)pintar()});
 $('tTal').addEventListener('click',function(){TAB='talleres';pintar()});
 $('tAca').addEventListener('click',function(){TAB='academia';pintar()});
-$('salir').addEventListener('click',function(){clearSes();ROWS=[];$('q').value='';TAB='talleres';showLogin('')});
+$('salir').addEventListener('click',function(){clearSes();ROWS=[];ACA=null;ACAERR=false;$('q').value='';TAB='talleres';showLogin('')});
 document.addEventListener('click',function(e){
   var c=e.target.closest('[data-cert]');
   if(c){var r=ROWS[+c.getAttribute('data-cert')];if(r)certificado(r);return}
   if(e.target.id==='reint'){e.preventDefault();cargar()}
+  if(e.target.id==='reintA'){e.preventDefault();ACAERR=false;ACA=null;pintar();cargarAcademia()}
 });
 
 loadSes();
