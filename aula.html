@@ -252,7 +252,7 @@ function orden(a,b){
   if(fa)return -1;if(fb)return 1;return 0;
 }
 function norm(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}
-var TAB='talleres';
+var TAB=(location.hash==='#academia')?'academia':'talleres';
 /* ---------- Academia ---------- */
 var ACA=null,ACAERR=false;
 function miAcademia(){
@@ -287,10 +287,14 @@ function academiaHtml(q){
   if(!mods.length)return '<div class="empty">Muy pronto vas a ver acá la <b>Academia Ribel</b>: módulos, clases y material para estudiar a tu ritmo.</div>';
   var h='';
   if(!q){
+    var ped=ACA.pedido&&ACA.pedido.estado==='pendiente'?ACA.pedido:null;
     h+=acceso?
       '<div class="banner ok"><div><b>Tenés acceso a la Academia</b><p>Entrá a cada módulo para ver los videos y descargar el material.</p></div></div>':
+      ped?
+      '<div class="banner"><div><b>Tu pedido de la Academia está pendiente de pago</b><p>Pagá por transferencia'+(ped.precio!=null?' ('+esc(money(ped.precio,ped.moneda))+', pago único)':'')+'. Escribime y te paso los datos. Cuando confirme tu pago, se habilita todo acá.</p></div>'+
+      '<a class="btn" target="_blank" rel="noopener" href="'+esc(waLink('Hola! Soy '+NOMBRE+'. Pedí la Academia Ribel'+(ped.precio!=null?' por '+money(ped.precio,ped.moneda):'')+'. Quiero los datos para pagar por transferencia.'))+'">Pedir datos de pago por WhatsApp</a></div>':
       '<div class="banner"><div><b>Academia Ribel</b><p>Mirá todo lo que incluye. Con tu acceso ves los videos y descargás el material de cada clase.</p><p class="pr">Pago único · $25.000 · USD 23</p></div>'+
-      '<a class="btn" target="_blank" rel="noopener" href="'+esc(waLink('Hola! Soy '+NOMBRE+'. Quiero info de la Academia Ribel'))+'">Quiero la Academia</a></div>';
+      '<a class="btn" href="https://talleres.ribelgestion.com/?academia=1">Quiero la Academia</a></div>';
   }
   var cuerpo=mods.map(function(m,mi){
     var cl=Array.isArray(m.clases)?m.clases:[];

@@ -150,6 +150,7 @@ footer a { color: #a5b4fc; text-decoration: none; }
   <a href="https://ribelgestion.com" class="nav-logo"><img src="https://ribelgestion.com/logo.png" alt="Ribel"></a>
   <ul class="nav-links">
     <li><a href="#talleres">Talleres</a></li>
+    <li><a href="#academia">Academia</a></li>
     <li><a href="#grupo">Grupo de WhatsApp</a></li>
     <li><a href="aula.html" id="linkAula">Mi aula</a></li>
   </ul>
@@ -165,6 +166,10 @@ footer a { color: #a5b4fc; text-decoration: none; }
 <section class="proximos" id="talleres">
   <div class="cur"><span>Ver precios en:</span><div class="seg" role="group" aria-label="Moneda"><button type="button" id="bARS" aria-pressed="true">Pesos (ARS)</button><button type="button" id="bUSD" aria-pressed="false">Dólares (USD)</button></div></div>
   <div id="cards"></div>
+</section>
+
+<section class="proximos" id="academia">
+  <div id="acaCard"></div>
 </section>
 
 <section class="incluye">
@@ -214,7 +219,10 @@ footer a { color: #a5b4fc; text-decoration: none; }
 
 <script>
 var PRECIO = 15000;      // taller en vivo, pesos argentinos
-var PRECIO_USD = 12;     // taller en vivo, dólares
+var PRECIO_USD = 12;
+var PRECIO_ACA = 25000;  // academia, pago único, pesos argentinos
+var PRECIO_ACA_USD = 23; // academia, pago único, dólares
+var MODULOS = ['Empezá con el pie derecho','Lo legal y administrativo','Tu espacio y tus servicios','Tus números','Organización y gestión del tiempo','Marketing y redes sociales','Ventas y fidelización'];     // taller en vivo, dólares
 var cur = 'ARS';         // moneda que se está viendo
 
 var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -252,6 +260,7 @@ function parseF(f){ var p = f.split('-'); return new Date(+p[0], +p[1]-1, +p[2])
 function fechaLarga(t){ var d = parseF(t.f); return DIAS[d.getDay()] + ' ' + d.getDate() + ' de ' + MESES[d.getMonth()] + (t.h ? ' · ' + t.h : ''); }
 function fechaCorta(t){ var d = parseF(t.f); return d.getDate() + '/' + (d.getMonth()+1) + (t.h ? ' · ' + t.h : ''); }
 function price(){ return cur === 'USD' ? PRECIO_USD : PRECIO; }
+function priceA(){ return cur === 'USD' ? PRECIO_ACA_USD : PRECIO_ACA; }
 function money(n){
   var v = Math.round(n * 100) / 100;
   var s = (v % 1 === 0 ? String(v) : v.toFixed(2)).split('.');
@@ -264,7 +273,23 @@ function proximos(){
           .slice(0, 2);
 }
 
+function renderAca(){
+  $('acaCard').innerHTML = '<div class="bloque-card"><div class="bloque-info">' +
+    '<p class="bloque-eyebrow">Academia online</p>' +
+    '<h2>El conocimiento que nadie te enseñó</h2>' +
+    '<p class="bloque-desc">Un programa completo para que dejes de improvisar y empieces a manejar tu negocio con claridad: precios, clientes, agenda y finanzas, paso a paso.</p>' +
+    '<details class="tem"><summary>Ver los módulos</summary><ul>' + MODULOS.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></details>' +
+    '</div><div class="bloque-box">' +
+    '<p class="box-label">Pago único</p>' +
+    '<p class="box-monto">' + esc(money(priceA())) + '</p>' +
+    '<p class="box-sub">Acceso de por vida · videos y material</p>' +
+    '<button class="btn" type="button" data-anotar="aca">Quiero la Academia</button>' +
+    '<p class="box-nota">Pago por transferencia</p>' +
+    '</div></div>';
+}
+
 function render(){
+  renderAca();
   var lst = proximos(), box = $('cards');
   if(!lst.length){
     box.innerHTML = '<div class="vacio"><b>Estamos armando las próximas fechas</b>Sumate al grupo de WhatsApp y te avisamos apenas haya nuevo taller.</div>';
@@ -313,9 +338,13 @@ function setModo(v){
 
 function openSheet(i){
   selI = i;
-  var t = T[i];
-  var h = '<ul><li>' + esc(t.n) + ' <span style="color:var(--gris)">· en vivo · ' + esc(fechaCorta(t)) + '</span></li></ul>' +
-          '<div class="r"><b>Total</b><b>' + esc(money(price())) + '</b></div>';
+  var esA = (i === 'aca');
+  var t = esA ? null : T[i];
+  var h = esA ?
+    '<ul><li>Academia Ribel <span style="color:var(--gris)">· pago único · acceso de por vida</span></li></ul><div class="r"><b>Total</b><b>' + esc(money(priceA())) + '</b></div>' :
+    '<ul><li>' + esc(t.n) + ' <span style="color:var(--gris)">· en vivo · ' + esc(fechaCorta(t)) + '</span></li></ul>' +
+    '<div class="r"><b>Total</b><b>' + esc(money(price())) + '</b></div>';
+  $('mt').textContent = esA ? 'Confirmá tu pedido' : 'Confirmá tu inscripción';
   $('res').innerHTML = h;
   $('err').textContent = '';
   var s = getSes();
@@ -357,7 +386,7 @@ $('close').addEventListener('click', closeSheet);
 ov.addEventListener('click', function(e){ if(e.target === ov) closeSheet(); });
 document.addEventListener('click', function(e){
   var b = e.target.closest ? e.target.closest('[data-anotar]') : null;
-  if(b){ openSheet(+b.getAttribute('data-anotar')); return; }
+  if(b){ var v = b.getAttribute('data-anotar'); openSheet(v === 'aca' ? 'aca' : +v); return; }
   if(e.target && e.target.id === 'otraCuenta'){
     try{ localStorage.removeItem(SES_KEY); }catch(x){}
     $('mail').value = '';
@@ -424,7 +453,22 @@ function perfilDe(s){
 }
 function etiquetaBtn(){ return getSes() ? 'Confirmar inscripción' : 'Crear mi cuenta e inscribirme'; }
 
+// Pedido de la Academia: queda pendiente hasta que Marcela confirma el pago
+function pedirAcademia(c, nombre, whats, mail){
+  var H = {'apikey':SUPABASE_KEY, 'Authorization':'Bearer ' + c.tk, 'Content-Type':'application/json'};
+  return fetch(SUPABASE_URL + '/rest/v1/rpc/mi_academia', {method:'POST', headers:H, body:'{}'})
+    .then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
+    .then(function(d){
+      if(d && (d.acceso || (d.pedido && d.pedido.estado === 'pendiente'))) return;   // ya la tiene o ya la pidió
+      var H2 = {'apikey':SUPABASE_KEY, 'Authorization':'Bearer ' + c.tk, 'Content-Type':'application/json', 'Prefer':'return=minimal'};
+      return fetch(SUPABASE_URL + '/rest/v1/academia_pedidos', {method:'POST', headers:H2,
+        body:JSON.stringify({user_id:c.uid, nombre:nombre, email:mail, whatsapp:whats, precio:priceA(), moneda:cur})
+      }).then(function(res){ if(!res.ok) throw new Error('HTTP ' + res.status); });
+    });
+}
+
 function inscribir(c, nombre, whats, mail){
+  if(selI === 'aca') return pedirAcademia(c, nombre, whats, mail);
   var t = T[selI];
   var filas = [{
     taller: t.n, nombre: nombre, email: mail, whatsapp: whats,
@@ -473,7 +517,7 @@ function entrarYa(mail, clave){
       }
       btn.textContent = 'Inscribiéndote…';
       return inscribir({tk:x.d.access_token, uid:x.d.user.id}, nombre, whats, mail)
-        .then(function(){ btn.textContent = '¡Listo! Entrando a tu aula…'; location.href = 'aula.html'; });
+        .then(function(){ btn.textContent = '¡Listo! Entrando a tu aula…'; location.href = (selI === 'aca') ? 'aula.html#academia' : 'aula.html'; });
     })
     .catch(function(e){
       enviando = false; btn.disabled = false; btn.textContent = 'Ingresar e inscribirme';
@@ -501,7 +545,7 @@ $('send').addEventListener('click', function(){
   enviando = true; btn.disabled = true; btn.textContent = 'Creando tu aula…';
   conCuenta(nombre, whats, mail, clave)
     .then(function(c){ return inscribir(c, nombre, whats, mail); })
-    .then(function(){ btn.textContent = '¡Listo! Entrando a tu aula…'; location.href = 'aula.html'; })
+    .then(function(){ btn.textContent = '¡Listo! Entrando a tu aula…'; location.href = (selI === 'aca') ? 'aula.html#academia' : 'aula.html'; })
     .catch(function(e){
       enviando = false; btn.disabled = false; btn.textContent = etiquetaBtn();
       if(e && e.message === 'EXISTE') err.innerHTML = 'Ese mail ya tiene una cuenta y la contraseña no coincide. <a href="aula.html" style="color:var(--arena-oscuro);font-weight:700">Entrá a Mi aula</a> o escribinos por WhatsApp si la perdiste.';
@@ -529,6 +573,7 @@ $('bUSD').addEventListener('click', function(){ setCur('USD'); });
 })();
 
 render();
+if(/[?&]academia\b/.test(location.search)) openSheet('aca');
 </script>
 </body>
 </html>

@@ -1136,19 +1136,37 @@ document.addEventListener('click',function(e){
 });
 
 /* ---------- Academia: módulos, clases y accesos (todo a mano) ---------- */
-var ACM=[],ACL=[],ACS=[],AERR=false,AV='lista',AT='cont',AEM=null,AEC=null,APDF=null,APDFNEW=false,ADEL=null,OPENM={};
+var ACM=[],ACL=[],ACS=[],ACP=[],AERR=false,AV='lista',AT='cont',AEM=null,AEC=null,APDF=null,APDFNEW=false,ADEL=null,OPENM={};
 function aOrd(a,b){return (a.orden-b.orden)||(a.id-b.id)}
 function clasesDe(m){return ACL.filter(function(c){return String(c.modulo_id)===String(m.id)}).sort(aOrd)}
 function acaCargar(){
   return Promise.all([
     api('academia_modulos?select=*&order=orden.asc,id.asc'),
     api('academia_clases?select=*&order=orden.asc,id.asc'),
-    api('academia_accesos?select=*&order=creado_en.desc')
-  ]).then(function(r){ACM=r[0]||[];ACL=r[1]||[];ACS=r[2]||[];AERR=false})
-    .catch(function(e){if(e&&e.message==='AUTH')throw e;AERR=true;ACM=[];ACL=[];ACS=[]});
+    api('academia_accesos?select=*&order=creado_en.desc'),
+    api('academia_pedidos?select=*&order=creado_en.desc').catch(function(e){if(e&&e.message==='AUTH')throw e;return []})
+  ]).then(function(r){ACM=r[0]||[];ACL=r[1]||[];ACS=r[2]||[];ACP=r[3]||[];AERR=false})
+    .catch(function(e){if(e&&e.message==='AUTH')throw e;AERR=true;ACM=[];ACL=[];ACS=[];ACP=[]});
+}
+function pedPend(){
+  var ya=ACS.map(function(a){return String(a.user_id)});
+  return ACP.filter(function(p){return p.estado==='pendiente'&&ya.indexOf(String(p.user_id))<0});
+}
+function aPedidos(){
+  var l=pedPend();
+  if(!l.length)return '';
+  return '<div class="lbl">Pedidos pendientes de pago ('+l.length+')</div>'+l.map(function(p){
+    var d=new Date(p.creado_en),f=isNaN(d)?'':d.getDate()+'/'+(d.getMonth()+1);
+    var pr=p.precio!=null?money({precio:p.precio,moneda:p.moneda}):'';
+    var q=(ADEL==='p'+p.id)?
+      '<div class="ask danger">¿Descartar el pedido de <b>'+esc(p.nombre)+'</b>?<div class="acts"><button class="btn warn" type="button" data-a="ac_pdisok" data-id="'+p.id+'">Sí, descartar</button><button class="btn ghost" type="button" data-a="ac_cancel">No</button></div></div>':
+      '<div class="mini"><button class="back danger" type="button" data-a="ac_pdis" data-id="'+p.id+'">Descartar pedido</button></div>';
+    return '<div class="row"><div class="hd"><div class="nm"><b>'+esc(p.nombre)+'</b><small>'+esc(p.whatsapp)+' · '+esc(p.email)+(f?' · pidió el '+f:'')+(pr?' · '+esc(pr):'')+'</small></div><span class="pill p0">Pendiente</span></div>'+
+      '<div class="ac"><button class="btn ghost" type="button" data-a="ac_pwa" data-id="'+p.id+'">Escribir por WhatsApp</button><button class="btn" type="button" data-a="ac_pok" data-id="'+p.id+'">Confirmar pago y habilitar</button></div>'+q+'</div>';
+  }).join('');
 }
 function aTabs(){
-  return '<div class="prox" style="margin-bottom:14px">'+[['cont','Módulos y clases'],['acc','Quiénes tienen la Academia ('+ACS.length+')']].map(function(x){
+  return '<div class="prox" style="margin-bottom:14px">'+[['cont','Módulos y clases'],['acc','Pedidos y accesos ('+ACS.length+')'+(pedPend().length?'<span class="bd">'+pedPend().length+' pendiente'+(pedPend().length===1?'':'s')+'</span>':'')]].map(function(x){
     return '<button class="pchip" type="button" data-a="ac_tab" data-id="'+x[0]+'" aria-pressed="'+(AT===x[0])+'">'+x[1]+'</button>'}).join('')+'</div>';
 }
 function aMod(m,i){
@@ -1213,7 +1231,7 @@ function aResultados(q){
   }).join('');
 }
 function aAccesos(){
-  var h='<div class="box"><h2>Dar acceso a la Academia</h2><p class="d">Buscala por nombre o mail y tocá su nombre. Desde ese momento ve los videos y el material.</p>'+
+  var h=aPedidos()+'<div class="box" style="margin-top:12px"><h2>Dar acceso a la Academia</h2><p class="d">Buscala por nombre o mail y tocá su nombre. Desde ese momento ve los videos y el material.</p>'+
     '<label class="fld" for="acbus" style="margin:0"><span style="position:absolute;left:-9999px">Buscar</span><input id="acbus" type="search" placeholder="Ej: María" autocomplete="off"></label><div id="acres">'+aResultados('')+'</div></div>';
   h+='<div class="lbl">Con acceso ('+ACS.length+')</div>';
   h+=ACS.length?ACS.map(function(a){
@@ -1355,6 +1373,28 @@ document.addEventListener('click',function(e){
       if(x&&x.message==='HTTP 409'){toast('Ya tenía la Academia');return}
       fallo(x);
     });
+    return;
+  }
+  if(a==='ac_pwa'){
+    var pw=ACP.filter(function(x){return String(x.id)===String(id)})[0];if(!pw)return;
+    window.open('https://wa.me/'+waNum(pw.whatsapp),'_blank');return;
+  }
+  if(a==='ac_pdis'){ADEL='p'+id;renderAca();return}
+  if(a==='ac_pdisok'){
+    api('academia_pedidos?id=eq.'+encodeURIComponent(id),{method:'DELETE',rep:true}).then(function(r){
+      if(!r||!r.length)throw new Error('NODEL');
+      ACP=ACP.filter(function(x){return String(x.id)!==String(id)});ADEL=null;renderAca();toast('Pedido descartado');
+    }).catch(function(x){if(x&&x.message==='NODEL'){ADEL=null;renderAca();toast('No se pudo descartar')}else fallo(x)});
+    return;
+  }
+  if(a==='ac_pok'){
+    var pp=ACP.filter(function(x){return String(x.id)===String(id)})[0];if(!pp)return;
+    b.disabled=true;
+    var yaTiene=ACS.some(function(x){return String(x.user_id)===String(pp.user_id)});
+    var paso=yaTiene?Promise.resolve():api('academia_accesos',{method:'POST',body:[{user_id:pp.user_id,nombre:pp.nombre,email:pp.email}],rep:true}).then(function(r){if(r&&r[0])ACS.unshift(r[0])},function(x){if(x&&x.message==='HTTP 409')return;throw x});
+    paso.then(function(){return patch('academia_pedidos',pp.id,{estado:'pago'})}).then(function(){
+      pp.estado='pago';renderAca();toast('Academia habilitada para '+pp.nombre);
+    }).catch(function(x){b.disabled=false;fallo(x)});
     return;
   }
   if(a==='ac_rev'){ADEL='a'+id;renderAca();return}
